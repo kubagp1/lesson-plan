@@ -145,6 +145,7 @@ export default class Categories extends React.Component<
           sx={whiteSelectStyle}
           value={this.state.selectedLevel?.name}
           onChange={this.handleLevelChange.bind(this)}
+          key="level"
         >
           {LevelSelectOptions}
         </Select>
@@ -162,6 +163,7 @@ export default class Categories extends React.Component<
           sx={whiteSelectStyle}
           value={this.state.selectedPlan!.id}
           onChange={this.handlePlanChange.bind(this)}
+          key="plan"
         >
           {PlanSelectOptions}
         </Select>
@@ -183,6 +185,7 @@ export default class Categories extends React.Component<
           sx={whiteSelectStyle}
           value={this.state.selectedTeacher?.id}
           onChange={this.handleTeacherChange.bind(this)}
+          key="teacher"
         >
           {TeacherSelectOptions}
         </Select>

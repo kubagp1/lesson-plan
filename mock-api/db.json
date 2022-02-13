@@ -152,11 +152,6 @@
     },
     {
       "id": 1,
-      "name": "1B 1Tinf",
-      "category": {
-        "type": "students",
-        "name": "1"
-      },
       "hours": ["7:10 - 7:55"],
       "lessons": {
         "monday": [[null]],

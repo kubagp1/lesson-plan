@@ -1,12 +1,17 @@
-import { ICategories } from "../../shared/types"
+import { ICategories, IPlan } from "../../shared/types"
 
-const API_ENDPOINT = `${location.protocol}//${location.hostname}:3000/`
+const API_ENTRYPOINT = `${location.protocol}//${location.hostname}:3000/`
 
-alert(API_ENDPOINT)
+const fetchData = async (endpoint: string) => {
+  const response = await fetch(`${API_ENTRYPOINT}${endpoint}`)
+  if (!response.ok) {
+    throw new Error(`Could not fetch ${endpoint}, received ${response.status}`)
+  }
+  return response.json()
+}
 
-export const categories = () =>
-  fetch(API_ENDPOINT + "categories").then(res =>
-    res.json()
-  ) as Promise<ICategories>
+export const categories = () => fetchData("categories") as Promise<ICategories>
 
-export default { categories }
+export const plan = (id: number) => fetchData(`plans/${id}`) as Promise<IPlan>
+
+export default { categories, plan }
