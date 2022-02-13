@@ -13,12 +13,14 @@ import {
 import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline"
 import CircularProgress from "@mui/material/CircularProgress"
 
-import { IPlan, IPlanEntry, Weekday } from "../../shared/types"
+import { IPlan, IPlanEntry, Weekday, WEEKDAYS } from "../../shared/types"
 import apiCalls from "../apiCalls"
+import SwipeableViews from "react-swipeable-views"
 
 type Props = {
   planId: number | null
-  weekday: Weekday
+  selectedWeekday: Weekday
+  onChange: (newValue: Weekday) => void
 }
 
 type State = {
@@ -27,7 +29,7 @@ type State = {
   error: boolean
 }
 
-export default class WeekDayTab extends React.Component<Props, State> {
+export default class WeekdayViews extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props)
 
@@ -80,6 +82,13 @@ export default class WeekDayTab extends React.Component<Props, State> {
     this.fetchPlanIfNeeded()
   }
 
+  handleTabSwipe(index: number) {
+    const newWeekday = WEEKDAYS[index]
+    if (newWeekday !== this.props.selectedWeekday) {
+      this.props.onChange(newWeekday)
+    }
+  }
+
   errorMessage = (
     <Box
       sx={{
@@ -96,14 +105,7 @@ export default class WeekDayTab extends React.Component<Props, State> {
         Wystąpił błąd podczas ładowania planu. Spróbuj ponownie później.
       </Typography>
       <a href="https://zst-radom.edu.pl/plan_www/">
-        <Link
-          variant="button"
-          onClick={() => {
-            console.info("I'm a button.")
-          }}
-        >
-          Przejdź do starszej strony planu
-        </Link>
+        <Link variant="button">Przejdź do starszej strony planu</Link>
       </a>
     </Box>
   )
@@ -132,35 +134,49 @@ export default class WeekDayTab extends React.Component<Props, State> {
       return this.loadingMessage
     }
 
-    console.log(this.state.displayedPlan)
+    var swipeableViews: JSX.Element[] = []
+
+    for (const weekday of WEEKDAYS) {
+      swipeableViews.push(
+        <Table>
+          <TableBody>
+            {this.state.displayedPlan?.hours.map((hour, i) => (
+              <TableRow key={hour}>
+                <TableCell>{hour}</TableCell>
+                <TableCell>
+                  {this.state.displayedPlan?.lessons[weekday][i]
+                    ?.filter<IPlanEntry>(
+                      (entry): entry is IPlanEntry => entry !== null
+                    )
+                    .map(entry => (
+                      <Box
+                        sx={{
+                          display: "flex",
+                          justifyContent: "space-between"
+                        }}
+                      >
+                        <span>{entry.name}</span>
+                        <span>{entry.room}</span>
+                      </Box>
+                    ))}
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      )
+    }
 
     return (
-      <Table>
-        <TableBody>
-          {this.state.displayedPlan?.hours.map((hour, i) => (
-            <TableRow key={hour}>
-              <TableCell>{hour}</TableCell>
-              <TableCell>
-                {this.state.displayedPlan?.lessons[this.props.weekday][i]
-                  ?.filter<IPlanEntry>(
-                    (entry): entry is IPlanEntry => entry !== null
-                  )
-                  .map(entry => (
-                    <Box
-                      sx={{
-                        display: "flex",
-                        justifyContent: "space-between"
-                      }}
-                    >
-                      <span>{entry.name}</span>
-                      <span>{entry.room}</span>
-                    </Box>
-                  ))}
-              </TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
+      <SwipeableViews
+        onChangeIndex={this.handleTabSwipe.bind(this)}
+        index={WEEKDAYS.indexOf(this.props.selectedWeekday)}
+        containerStyle={{
+          transition: "transform 0.35s cubic-bezier(0.15, 0.3, 0.25, 1) 0s" // workaround for https://github.com/oliviertassinari/react-swipeable-views/issues/599
+        }}
+      >
+        {swipeableViews}
+      </SwipeableViews>
     )
   }
 }
