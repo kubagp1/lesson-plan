@@ -17,6 +17,46 @@ import { IPlan, IPlanEntry, Weekday, WEEKDAYS } from "../../shared/types"
 import apiCalls from "../apiCalls"
 import SwipeableViews from "react-swipeable-views"
 
+import { getCurrentWeekday } from "./WeekdayTabs"
+
+function getSecondsSinceMidnight(): number {
+  const date = new Date()
+  const hours = date.getHours()
+  const minutes = date.getMinutes()
+  // I'm not using seconds because it would cause unnecessary updates to the UI
+  return hours * 3600 + minutes * 60
+}
+
+function getTimeRange(str: string): [number, number] {
+  try {
+    const [start, end] = str.split("-")
+
+    const [startHours, startMinutes] = start.split(":").map(Number) // Never use parseInt() in this case https://medium.com/dailyjs/parseint-mystery-7c4368ef7b21
+    const [endHours, endMinutes] = end.split(":").map(Number)
+
+    const startSeconds = startHours * 3600 + startMinutes * 60
+    const endSeconds = endHours * 3600 + endMinutes * 60
+
+    return [startSeconds, endSeconds]
+  } catch {
+    return [-1, -1]
+  }
+}
+
+function shouldBeHighlighted(
+  timeRange: [number, number],
+  previousEnd: number,
+  time: number
+): boolean {
+  const [start, end] = timeRange
+
+  if (previousEnd === -1) return time >= start && time <= end
+
+  if (start === -1 || end === -1) return false
+
+  return time > previousEnd && time <= end
+}
+
 type Props = {
   planId: number | null
   selectedWeekday: Weekday
@@ -27,16 +67,20 @@ type State = {
   displayedPlan: IPlan | null
   loading: boolean
   error: boolean
+  currentTime: number
 }
 
 export default class WeekdayViews extends React.Component<Props, State> {
+  interval: number | null = null
+
   constructor(props: Props) {
     super(props)
 
     this.state = {
       displayedPlan: null,
       loading: false,
-      error: false
+      error: false,
+      currentTime: getSecondsSinceMidnight()
     }
   }
 
@@ -80,6 +124,20 @@ export default class WeekdayViews extends React.Component<Props, State> {
 
   componentDidMount() {
     this.fetchPlanIfNeeded()
+
+    this.interval = setInterval(() => {
+      const currentTime = getSecondsSinceMidnight()
+
+      if (currentTime !== this.state.currentTime) {
+        this.setState({
+          currentTime
+        })
+      }
+    }, 1000)
+  }
+
+  componentWillUnmount() {
+    if (this.interval !== null) clearInterval(this.interval)
   }
 
   handleTabSwipe(index: number) {
@@ -140,8 +198,21 @@ export default class WeekdayViews extends React.Component<Props, State> {
       swipeableViews.push(
         <Table key={weekday}>
           <TableBody>
-            {this.state.displayedPlan?.hours.map((hour, index) => (
-              <TableRow key={index}>
+            {this.state.displayedPlan?.hours.map((hour, index, hours) => (
+              <TableRow
+                key={index}
+                sx={{
+                  backgroundColor:
+                    weekday === getCurrentWeekday() &&
+                    shouldBeHighlighted(
+                      getTimeRange(hour),
+                      getTimeRange(hours[index - 1])[1],
+                      this.state.currentTime
+                    )
+                      ? "lightcyan"
+                      : undefined
+                }}
+              >
                 <TableCell>{hour}</TableCell>
                 <TableCell>
                   {this.state.displayedPlan?.lessons[weekday][index]

@@ -4,12 +4,12 @@ import { AppBar, Toolbar, Box } from "@mui/material"
 
 import { Weekday } from "../../shared/types"
 
-import WeekdayTabs from "./WeekdayTabs"
+import WeekdayTabs, { getCurrentWeekday } from "./WeekdayTabs"
 import Categories from "./Categories"
 import WeekdayViews from "./WeekdayViews"
 
 const App = () => {
-  const [weekday, setWeekday] = useState("monday" as Weekday)
+  const [weekday, setWeekday] = useState(getCurrentWeekday() as Weekday)
   const handleWeekdayChange = (newValue: Weekday) => {
     setWeekday(newValue)
   }
