@@ -104,9 +104,9 @@ export default class WeekdayViews extends React.Component<Props, State> {
       <Typography textAlign="center">
         Wystąpił błąd podczas ładowania planu. Spróbuj ponownie później.
       </Typography>
-      <a href="https://zst-radom.edu.pl/plan_www/">
-        <Link variant="button">Przejdź do starszej strony planu</Link>
-      </a>
+      <Link href="https://zst-radom.edu.pl/plan_www/" variant="button">
+        Przejdź do starszej strony planu
+      </Link>
     </Box>
   )
 
@@ -138,24 +138,27 @@ export default class WeekdayViews extends React.Component<Props, State> {
 
     for (const weekday of WEEKDAYS) {
       swipeableViews.push(
-        <Table>
+        <Table key={weekday}>
           <TableBody>
-            {this.state.displayedPlan?.hours.map((hour, i) => (
-              <TableRow key={hour}>
+            {this.state.displayedPlan?.hours.map((hour, index) => (
+              <TableRow key={index}>
                 <TableCell>{hour}</TableCell>
                 <TableCell>
-                  {this.state.displayedPlan?.lessons[weekday][i]
+                  {this.state.displayedPlan?.lessons[weekday][index]
                     ?.filter<IPlanEntry>(
                       (entry): entry is IPlanEntry => entry !== null
                     )
-                    .map(entry => (
+                    .map((entry, index) => (
                       <Box
+                        key={index}
                         sx={{
                           display: "flex",
                           justifyContent: "space-between"
                         }}
                       >
-                        <span>{entry.name}</span>
+                        <span style={{ fontWeight: "bolder" }}>
+                          {entry.name}
+                        </span>
                         <span>{entry.room}</span>
                       </Box>
                     ))}
@@ -172,7 +175,11 @@ export default class WeekdayViews extends React.Component<Props, State> {
         onChangeIndex={this.handleTabSwipe.bind(this)}
         index={WEEKDAYS.indexOf(this.props.selectedWeekday)}
         containerStyle={{
-          transition: "transform 0.35s cubic-bezier(0.15, 0.3, 0.25, 1) 0s" // workaround for https://github.com/oliviertassinari/react-swipeable-views/issues/599
+          transition: "transform 0.35s cubic-bezier(0.15, 0.3, 0.25, 1) 0s", // workaround for https://github.com/oliviertassinari/react-swipeable-views/issues/599
+          height: "100%"
+        }}
+        style={{
+          flexGrow: 1
         }}
       >
         {swipeableViews}
@@ -180,3 +187,5 @@ export default class WeekdayViews extends React.Component<Props, State> {
     )
   }
 }
+
+// TODO: make scrollableviews fill the whole screen height

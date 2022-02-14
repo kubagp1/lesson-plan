@@ -1,6 +1,7 @@
 {
   "scripts": {
-    "serve": "parcel src/index.html --open"
+    "serve": "parcel src/index.html",
+    "build": "parcel build src/index.html"
   },
   "dependencies": {
     "@emotion/react": "^11.7.1",
