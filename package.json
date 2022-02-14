@@ -1,6 +1,7 @@
 {
   "scripts": {
-    "serve": "parcel src/index.html --open"
+    "serve": "parcel src/index.html",
+    "build": "parcel build src/index.html"
   },
   "dependencies": {
     "@emotion/react": "^11.7.1",
@@ -11,12 +12,14 @@
     "@reduxjs/toolkit": "^1.7.2",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
-    "react-redux": "^7.2.6"
+    "react-redux": "^7.2.6",
+    "react-swipeable-views": "^0.14.0"
   },
   "devDependencies": {
     "@parcel/transformer-less": "^2.3.1",
     "@types/react": "^17.0.39",
     "@types/react-dom": "^17.0.11",
+    "@types/react-swipeable-views": "^0.13.1",
     "parcel": "^2.3.1",
     "typescript": "^4.5.5"
   }

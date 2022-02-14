@@ -1,12 +1,12 @@
 import React, { useState } from "react"
 
-import { AppBar, Toolbar, Typography } from "@mui/material"
+import { AppBar, Toolbar, Box } from "@mui/material"
 
 import { Weekday } from "../../shared/types"
 
 import WeekdayTabs from "./WeekdayTabs"
 import Categories from "./Categories"
-import WeekdayTab from "./WeekdayTab"
+import WeekdayViews from "./WeekdayViews"
 
 const App = () => {
   const [weekday, setWeekday] = useState("monday" as Weekday)
@@ -20,17 +20,19 @@ const App = () => {
   }
 
   return (
-    <React.Fragment>
+    <Box sx={{ display: "flex", flexDirection: "column", height: "100%" }}>
       <AppBar position="static">
         <Toolbar sx={{ display: "flex", gap: "16px" }}>
           <Categories onChange={handlePlanChange} />
         </Toolbar>
       </AppBar>
-
-      <WeekdayTabs value={weekday} onChange={handleWeekdayChange} />
-
-      <WeekdayTab planId={selectedPlanId} weekday={weekday} />
-    </React.Fragment>
+      <WeekdayTabs weekday={weekday} onChange={handleWeekdayChange} />
+      <WeekdayViews
+        planId={selectedPlanId}
+        selectedWeekday={weekday}
+        onChange={handleWeekdayChange}
+      />
+    </Box>
   )
 }
 

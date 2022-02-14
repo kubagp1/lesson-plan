@@ -34,3 +34,11 @@ export interface IPlanEntry {
 export type CategoryName = "students" | "teachers"
 
 export type Weekday = "monday" | "tuesday" | "wednesday" | "thursday" | "friday"
+
+export const WEEKDAYS: Weekday[] = [
+  "monday",
+  "tuesday",
+  "wednesday",
+  "thursday",
+  "friday"
+]
