@@ -17,11 +17,11 @@ const whiteSelectStyle = {
   }
 }
 
-const savedSession = {
-  category: "students",
-  level: "1",
-  plan: "1B 1Tinf",
-  teacher: "A. Rudnicki"
+interface SavedSession {
+  category: CategoryName
+  level?: string
+  plan?: string
+  teacher?: string
 }
 
 type CategoriesState = {
@@ -33,19 +33,32 @@ type CategoriesState = {
 }
 
 type CategoriesProps = {
-  onChange?: (newValue: number) => void
+  onChange: (newValue: number) => void
 }
 
 export default class Categories extends React.Component<
   CategoriesProps,
   CategoriesState
 > {
+  savedSession: SavedSession
+
   constructor(props: CategoriesProps) {
     super(props)
 
+    const savedSessionString = localStorage.getItem("savedSession")
+    try {
+      if (savedSessionString !== null)
+        this.savedSession = JSON.parse(savedSessionString) as SavedSession
+      else throw Error()
+    } catch {
+      this.savedSession = {
+        category: "students"
+      }
+    }
+
     this.state = {
       categories: null,
-      selectedCategory: savedSession.category as CategoryName,
+      selectedCategory: this.savedSession.category,
       selectedLevel: null,
       selectedPlan: null,
       selectedTeacher: null
@@ -55,15 +68,17 @@ export default class Categories extends React.Component<
   componentDidMount() {
     apiCalls.categories().then(categories => {
       const selectedLevel =
-        categories.students.find(level => level.name === savedSession.level) ||
-        categories.students[0]
+        categories.students.find(
+          level => level.name === this.savedSession.level
+        ) || categories.students[0]
       const selectedPlan =
-        selectedLevel.plans.find(plan => plan.name === savedSession.plan) ||
-        selectedLevel.plans[0]
+        selectedLevel.plans.find(
+          plan => plan.name === this.savedSession.plan
+        ) || selectedLevel.plans[0]
 
       const selectedTeacher =
         categories.teachers.find(
-          teacher => teacher.name === savedSession.teacher
+          teacher => teacher.name === this.savedSession.teacher
         ) || categories.teachers[0]
 
       this.setState({
@@ -73,8 +88,14 @@ export default class Categories extends React.Component<
         selectedTeacher: selectedTeacher
       })
 
-      this.props?.onChange?.(selectedPlan.id)
+      if (this.state.selectedCategory === "students")
+        this.props.onChange(selectedPlan.id)
+      else this.props.onChange(selectedTeacher.id)
     })
+  }
+
+  saveSession() {
+    localStorage.setItem("savedSession", JSON.stringify(this.savedSession))
   }
 
   handleCategoryChange(event: SelectChangeEvent<CategoryName>) {
@@ -85,24 +106,30 @@ export default class Categories extends React.Component<
     })
 
     if (selectedCategory === "students") {
-      this.props.onChange?.(this.state.selectedPlan!.id)
+      this.props.onChange(this.state.selectedPlan!.id)
     } else {
-      this.props.onChange?.(this.state.selectedTeacher!.id)
+      this.props.onChange(this.state.selectedTeacher!.id)
     }
+
+    this.savedSession.category = selectedCategory
+    this.saveSession()
   }
 
   handleLevelChange(event: SelectChangeEvent) {
     const selectedLevel = this.state.categories!.students.find(
       level => level.name === event.target.value
     )!
-    const firstPlan = selectedLevel?.plans[0]
+    const firstPlan = selectedLevel.plans[0]
 
     this.setState({
       selectedLevel: selectedLevel,
       selectedPlan: firstPlan
     })
 
-    this.props.onChange?.(firstPlan.id)
+    this.props.onChange(firstPlan.id)
+
+    this.savedSession.level = event.target.value
+    this.saveSession()
   }
 
   handlePlanChange(event: SelectChangeEvent<number>) {
@@ -112,7 +139,10 @@ export default class Categories extends React.Component<
 
     this.setState({ selectedPlan: selectedPlan })
 
-    this.props.onChange?.(selectedPlan.id)
+    this.props.onChange(selectedPlan.id)
+
+    this.savedSession.plan = selectedPlan.name
+    this.saveSession()
   }
 
   handleTeacherChange(event: SelectChangeEvent<number>) {
@@ -122,7 +152,10 @@ export default class Categories extends React.Component<
 
     this.setState({ selectedTeacher: selectedTeacher })
 
-    this.props.onChange?.(selectedTeacher.id)
+    this.props.onChange(selectedTeacher.id)
+
+    this.savedSession.teacher = selectedTeacher.name
+    this.saveSession()
   }
 
   render(): React.ReactNode {
@@ -133,7 +166,7 @@ export default class Categories extends React.Component<
     var displayedSelects: JSX.Element[] = []
 
     if (this.state.selectedCategory === "students") {
-      const LevelSelectOptions = this.state.categories?.students.map(level => (
+      const LevelSelectOptions = this.state.categories.students.map(level => (
         <MenuItem key={level.name} value={level.name}>
           {level.name}
         </MenuItem>
