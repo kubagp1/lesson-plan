@@ -1,17 +1,24 @@
 import React, { useState } from "react"
 
-import { Weekday } from "../../shared/types"
+import { Weekday, WEEKDAYS } from "../../shared/types"
 
 import { Tabs, Tab } from "@mui/material"
 
+export function getCurrentWeekday(): Weekday {
+  const date = new Date()
+  const weekdayNumber = date.getDay()
+
+  return WEEKDAYS[weekdayNumber - 1]
+}
+
 interface Props {
-  weekday?: Weekday
-  onChange?: (newValue: Weekday) => void
+  weekday: Weekday
+  onChange: (newValue: Weekday) => void
 }
 
 class WeekdayTabs extends React.Component<Props> {
   handleTabChange(event: React.SyntheticEvent, newValue: Weekday) {
-    this.props.onChange?.(newValue)
+    this.props.onChange(newValue)
   }
 
   render() {
