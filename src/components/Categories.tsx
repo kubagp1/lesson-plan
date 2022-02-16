@@ -101,14 +101,18 @@ export default class Categories extends React.Component<
   handleCategoryChange(event: SelectChangeEvent<CategoryName>) {
     const selectedCategory = event.target.value as CategoryName
 
+    const differentCategory = this.state.selectedCategory !== selectedCategory
+
     this.setState({
       selectedCategory: selectedCategory
     })
 
-    if (selectedCategory === "students") {
-      this.props.onChange(this.state.selectedPlan!.id)
-    } else {
-      this.props.onChange(this.state.selectedTeacher!.id)
+    if (differentCategory) {
+      if (selectedCategory === "students") {
+        this.props.onChange(this.state.selectedPlan!.id)
+      } else {
+        this.props.onChange(this.state.selectedTeacher!.id)
+      }
     }
 
     this.savedSession.category = selectedCategory
@@ -121,12 +125,14 @@ export default class Categories extends React.Component<
     )!
     const firstPlan = selectedLevel.plans[0]
 
+    const differentPlan = this.state.selectedPlan!.id !== firstPlan.id
+
     this.setState({
       selectedLevel: selectedLevel,
       selectedPlan: firstPlan
     })
 
-    this.props.onChange(firstPlan.id)
+    if (differentPlan) this.props.onChange(firstPlan.id)
 
     this.savedSession.level = event.target.value
     this.saveSession()
@@ -137,9 +143,11 @@ export default class Categories extends React.Component<
       plan => plan.id === event.target.value
     )!
 
+    const differentPlan = this.state.selectedPlan!.id !== selectedPlan.id
+
     this.setState({ selectedPlan: selectedPlan })
 
-    this.props.onChange(selectedPlan.id)
+    if (differentPlan) this.props.onChange(selectedPlan.id)
 
     this.savedSession.plan = selectedPlan.name
     this.saveSession()

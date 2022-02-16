@@ -105,6 +105,7 @@ export default class WeekdayViews extends React.Component<Props, State> {
         })
         .catch(() => {
           this.setState({
+            displayedPlan: null,
             loading: false,
             error: true
           })
@@ -113,18 +114,12 @@ export default class WeekdayViews extends React.Component<Props, State> {
   }
 
   componentDidUpdate(prevProps: Props) {
-    if (prevProps.planId !== this.props.planId) {
-      this.setState({
-        loading: false,
-        error: false
-      })
-      this.fetchPlanIfNeeded()
-    }
+    if (prevProps.planId !== this.props.planId) this.fetchPlanIfNeeded()
+
+    return true
   }
 
   componentDidMount() {
-    this.fetchPlanIfNeeded()
-
     this.interval = setInterval(() => {
       const currentTime = getSecondsSinceMidnight()
 
@@ -246,7 +241,7 @@ export default class WeekdayViews extends React.Component<Props, State> {
         onChangeIndex={this.handleTabSwipe.bind(this)}
         index={WEEKDAYS.indexOf(this.props.selectedWeekday)}
         containerStyle={{
-          transition: "transform 0.35s cubic-bezier(0.15, 0.3, 0.25, 1) 0s", // workaround for https://github.com/oliviertassinari/react-swipeable-views/issues/599
+          // transition: "transform 0.35s cubic-bezier(0.15, 0.3, 0.25, 1) 0s",
           height: "100%"
         }}
         style={{
@@ -258,5 +253,3 @@ export default class WeekdayViews extends React.Component<Props, State> {
     )
   }
 }
-
-// TODO: make scrollableviews fill the whole screen height
