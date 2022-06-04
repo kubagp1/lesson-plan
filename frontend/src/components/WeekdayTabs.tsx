@@ -6,7 +6,8 @@ import { Tabs, Tab } from "@mui/material"
 
 export function getCurrentWeekday(): Weekday {
   const date = new Date()
-  const weekdayNumber = date.getDay()
+  var weekdayNumber = date.getDay()
+  if (weekdayNumber > 5 || weekdayNumber < 1) weekdayNumber = 1
 
   return WEEKDAYS[weekdayNumber - 1]
 }

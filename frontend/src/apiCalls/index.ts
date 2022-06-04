@@ -1,6 +1,6 @@
 import { ICategories, IPlan } from "../../shared/types"
 
-const API_ENTRYPOINT = `${location.protocol}//${location.hostname}:3000/`
+export const API_ENTRYPOINT: string = process.env.API_ENTRYPOINT
 
 const fetchData = async (endpoint: string) => {
   const response = await fetch(`${API_ENTRYPOINT}${endpoint}`)

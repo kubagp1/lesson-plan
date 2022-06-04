@@ -14,7 +14,7 @@ import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline"
 import CircularProgress from "@mui/material/CircularProgress"
 
 import { IPlan, IPlanEntry, Weekday, WEEKDAYS } from "../../shared/types"
-import apiCalls from "../apiCalls"
+import apiCalls, { plan } from "../apiCalls"
 import SwipeableViews from "react-swipeable-views"
 
 import { getCurrentWeekday } from "./WeekdayTabs"
@@ -82,49 +82,56 @@ export default class WeekdayViews extends React.Component<Props, State> {
       error: false,
       currentTime: getSecondsSinceMidnight()
     }
+
+    new BroadcastChannel("cache-update").addEventListener("message", event => {
+      if (event.data.type === "plan") {
+        this.fetchPlan()
+      }
+    })
   }
 
-  fetchPlanIfNeeded() {
+  fetchPlan() {
     if (this.props.planId === null) {
       return
     }
 
-    if (this.props.planId !== this.state.displayedPlan?.id) {
-      this.setState({
-        loading: true,
-        error: false
-      })
+    this.setState({
+      loading: true,
+      error: false
+    })
 
-      apiCalls
-        .plan(this.props.planId)
-        .then(plan => {
-          this.setState({
-            displayedPlan: plan,
-            loading: false
-          })
+    const requestedPlanId = this.props.planId
+
+    apiCalls
+      .plan(requestedPlanId)
+      .then(plan => {
+        if (this.props.planId !== requestedPlanId) {
+          return
+        }
+        this.setState({
+          displayedPlan: plan,
+          loading: false
         })
-        .catch(() => {
-          this.setState({
-            loading: false,
-            error: true
-          })
+      })
+      .catch(() => {
+        if (this.props.planId !== requestedPlanId) {
+          return
+        }
+        this.setState({
+          displayedPlan: null,
+          loading: false,
+          error: true
         })
-    }
+      })
   }
 
   componentDidUpdate(prevProps: Props) {
-    if (prevProps.planId !== this.props.planId) {
-      this.setState({
-        loading: false,
-        error: false
-      })
-      this.fetchPlanIfNeeded()
-    }
+    if (prevProps.planId !== this.props.planId) this.fetchPlan()
+
+    return true
   }
 
   componentDidMount() {
-    this.fetchPlanIfNeeded()
-
     this.interval = setInterval(() => {
       const currentTime = getSecondsSinceMidnight()
 
@@ -246,7 +253,7 @@ export default class WeekdayViews extends React.Component<Props, State> {
         onChangeIndex={this.handleTabSwipe.bind(this)}
         index={WEEKDAYS.indexOf(this.props.selectedWeekday)}
         containerStyle={{
-          transition: "transform 0.35s cubic-bezier(0.15, 0.3, 0.25, 1) 0s", // workaround for https://github.com/oliviertassinari/react-swipeable-views/issues/599
+          // transition: "transform 0.35s cubic-bezier(0.15, 0.3, 0.25, 1) 0s",
           height: "100%"
         }}
         style={{
@@ -258,5 +265,3 @@ export default class WeekdayViews extends React.Component<Props, State> {
     )
   }
 }
-
-// TODO: make scrollableviews fill the whole screen height
