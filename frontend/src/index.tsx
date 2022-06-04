@@ -1,4 +1,7 @@
-// Register serivce worker
+new BroadcastChannel("cache-update").addEventListener("message", event => {
+  if (event.data.type === "app") window.location.reload()
+})
+
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => {
     navigator.serviceWorker.register(new URL("sw.ts", import.meta.url), {

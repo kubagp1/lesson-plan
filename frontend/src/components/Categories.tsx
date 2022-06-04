@@ -63,9 +63,19 @@ export default class Categories extends React.Component<
       selectedPlan: null,
       selectedTeacher: null
     }
+
+    new BroadcastChannel("cache-update").addEventListener("message", event => {
+      if (event.data.type === "categories") {
+        this.fetchCategories()
+      }
+    })
   }
 
   componentDidMount() {
+    this.fetchCategories()
+  }
+
+  private fetchCategories() {
     apiCalls.categories().then(categories => {
       const selectedLevel =
         categories.students.find(
