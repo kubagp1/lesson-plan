@@ -18,17 +18,31 @@ export interface ILevel {
   ];
 }
 
-export interface IPlan {
+export interface IPlan<
+  T extends IStudentPlanEntry | ITeacherPlanEntry | IRoomPlanEntry
+> {
   id: number;
-  hours: [string];
+  hours: string[];
   lessons: {
-    [key in Weekday]: [[IPlanEntry | null]];
+    [key in Weekday]: (T | null)[][];
   };
 }
-export interface IPlanEntry {
+export interface IStudentPlanEntry {
   name: string;
   teacher: string;
   room: string;
+}
+
+export interface ITeacherPlanEntry {
+  name: string;
+  students: string;
+  room: string;
+}
+
+export interface IRoomPlanEntry {
+  name: string;
+  teacher: string;
+  students: string;
 }
 
 export type CategoryName = "students" | "teachers" | "rooms";
