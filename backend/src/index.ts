@@ -1,10 +1,11 @@
-import Scraper from "./scraper/scraper.js";
+import { EventFunction } from "@google-cloud/functions-framework";
+import { Storage } from "@google-cloud/storage";
 
-var res = await new Scraper({
-  entrypoint: "http://localhost:5555/",
-  categories: "lista.html",
-}).scrape();
+const storage = new Storage();
+const BUCKET_NAME = process.env.BUCKET_NAME as string;
 
-// save to file
-import fs from "fs";
-fs.writeFileSync("./scraped.json", JSON.stringify(res, null, 1));
+export const event: EventFunction = (event, context) => {
+  // upload hello world text file to the bucket
+  const file = storage.bucket(BUCKET_NAME).file("hello-world.txt");
+  file.save("Hello World!");
+};

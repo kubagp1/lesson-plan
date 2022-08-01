@@ -1,0 +1,12 @@
+Make issues on github
+Reproduce everything in a new gcp project
+Add one place to specify region etc.
+Split modules into multiple files (chore)
+Try to think of a better way to send frontend dist to the bucket
+Work on IAM permissions
+Create a README.md
+Backend should save to a bucket
+Function should be triggered immediately after deploy
+Make a dev enviroment
+Hook cloudbuild to github
+Unify formatter / linter config
