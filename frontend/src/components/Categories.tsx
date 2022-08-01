@@ -2,7 +2,7 @@ import React, { useState } from "react"
 
 import { Select, MenuItem, SelectChangeEvent, Typography } from "@mui/material"
 import apiCalls, { categories } from "../apiCalls"
-import { CategoryName, ICategories, ILevel } from "../../shared/types"
+import { CategoryName, ICategories, ILevel } from "../shared/types"
 
 const whiteSelectStyle = {
   color: "white",

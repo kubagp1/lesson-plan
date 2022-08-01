@@ -1,6 +1,6 @@
 import React, { useState } from "react"
 
-import { Weekday, WEEKDAYS } from "../../shared/types"
+import { Weekday, WEEKDAYS } from "../shared/types"
 
 import { Tabs, Tab } from "@mui/material"
 
