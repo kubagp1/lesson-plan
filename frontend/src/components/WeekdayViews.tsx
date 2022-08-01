@@ -13,7 +13,7 @@ import {
 import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline"
 import CircularProgress from "@mui/material/CircularProgress"
 
-import { IPlan, IPlanEntry, Weekday, WEEKDAYS } from "../../shared/types"
+import { IPlan, IPlanEntry, Weekday, WEEKDAYS } from "../shared/types"
 import apiCalls, { plan } from "../apiCalls"
 import SwipeableViews from "react-swipeable-views"
 

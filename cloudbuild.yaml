@@ -1,0 +1,39 @@
+steps:
+  - name: "gcr.io/cloud-builders/npm"
+    entrypoint: sh
+    args:
+      - "-c"
+      - |
+        cd /workspace/backend
+        npm ci --include=dev
+        npm run build
+        cp -r ./node_modules/ ./lib/
+        cp ./package.json ./lib/
+        cp ./package-lock.json ./lib/
+  - name: "gcr.io/cloud-builders/npm"
+    entrypoint: sh
+    args:
+      - "-c"
+      - |
+        cd /workspace/frontend
+        echo API_ENTRYPOINT=https://storage.googleapis.com/${PROJECT_ID}/ > .env
+        npm ci --include=dev
+        npm run build
+  - name: "gcr.io/cloud-builders/gcloud"
+    entrypoint: "bash"
+    args: ["-c", "gsutil mb gs://${PROJECT_ID}_tfstate || exit 0"]
+  - name: "hashicorp/terraform"
+    entrypoint: "sh"
+    args:
+      - "-c"
+      - |
+        cd /workspace/terraform
+        terraform init -backend-config "bucket=${PROJECT_ID}_tfstate"
+        terraform plan
+        terraform apply -auto-approve
+    env:
+      - "TF_VAR_PROJECT_ID=$PROJECT_ID"
+      - "TF_VAR_DOMAIN_NAME=lessonplan.tk"
+  - name: "gcr.io/cloud-builders/gcloud"
+    entrypoint: "bash"
+    args: ["-c", "gsutil cp -r /workspace/frontend/dist/* gs://lessonplan.tk"]

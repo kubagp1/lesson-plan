@@ -2,7 +2,7 @@ import React, { useState } from "react"
 
 import { AppBar, Toolbar, Box } from "@mui/material"
 
-import { Weekday } from "../../shared/types"
+import { Weekday } from "../shared/types"
 
 import WeekdayTabs, { getCurrentWeekday } from "./WeekdayTabs"
 import Categories from "./Categories"

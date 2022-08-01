@@ -1,44 +1,65 @@
 export interface ICategories {
-  students: [ILevel]
+  students: [ILevel];
   teachers: [
     {
-      id: number
-      name: string
+      id: number;
+      name: string;
     }
-  ]
+  ];
 }
 
 export interface ILevel {
-  name: string
+  name: string;
   plans: [
     {
-      id: number
-      name: string
+      id: number;
+      name: string;
     }
-  ]
+  ];
 }
 
-export interface IPlan {
-  id: number
-  hours: [string]
+export interface IPlan<
+  T extends IStudentPlanEntry | ITeacherPlanEntry | IRoomPlanEntry
+> {
+  id: number;
+  hours: string[];
   lessons: {
-    [key in Weekday]: [[IPlanEntry | null]]
-  }
+    [key in Weekday]: (T | null)[][];
+  };
 }
-export interface IPlanEntry {
-  name: string
-  teacher: string
-  room: string
+export interface IStudentPlanEntry {
+  name: string;
+  teacher: string;
+  room: string;
 }
 
-export type CategoryName = "students" | "teachers"
+export interface ITeacherPlanEntry {
+  name: string;
+  students: string;
+  room: string;
+}
 
-export type Weekday = "monday" | "tuesday" | "wednesday" | "thursday" | "friday"
+export interface IRoomPlanEntry {
+  name: string;
+  teacher: string;
+  students: string;
+}
+
+export type CategoryName = "students" | "teachers" | "rooms";
+
+export const CategoryNames: CategoryName[] = ["students", "teachers", "rooms"];
+
+export type Weekday =
+  | "monday"
+  | "tuesday"
+  | "wednesday"
+  | "thursday"
+  | "friday";
 
 export const WEEKDAYS: Weekday[] = [
   "monday",
   "tuesday",
   "wednesday",
   "thursday",
-  "friday"
-]
+  "friday",
+];
