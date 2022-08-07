@@ -1,4 +1,7 @@
 steps:
+  - name: "ubuntu"
+    entrypoint: bash
+    args: [fix_symlinks.sh, "."]
   - name: "gcr.io/cloud-builders/npm"
     entrypoint: sh
     args:
@@ -36,4 +39,5 @@ steps:
       - "TF_VAR_DOMAIN_NAME=lessonplan.tk"
   - name: "gcr.io/cloud-builders/gcloud"
     entrypoint: "bash"
-    args: ["-c", "gsutil cp -r /workspace/frontend/dist/* gs://lessonplan.tk"]
+    args:
+      ["-c", "gsutil -m cp -r /workspace/frontend/dist/* gs://lessonplan.tk"]

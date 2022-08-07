@@ -35,12 +35,31 @@ data "terraform_remote_state" "state" {
   }
 }
 
+// APIs
+
+variable "gcp_service_list" {
+  description = "The list of apis necessary for the project"
+  type = list(string)
+  default = [
+    "cloudfunctions.googleapis.com",
+    "cloudscheduler.googleapis.com",
+  ]
+}
+
+resource "google_project_service" "services" {
+  for_each = toset(var.gcp_service_list)
+  project = var.PROJECT_ID
+  service = each.key
+}
+
 // MODULES
 
 module "backend" {
   source = "./modules/backend"
 
   PROJECT_ID = var.PROJECT_ID
+
+  depends_on = [google_project_service.services]
 }
 
 module "frontend" {
@@ -48,4 +67,6 @@ module "frontend" {
 
   PROJECT_ID  = var.PROJECT_ID
   DOMAIN_NAME = var.DOMAIN_NAME
+
+  depends_on = [google_project_service.services]
 }

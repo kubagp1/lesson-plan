@@ -33,18 +33,14 @@ resource "google_storage_bucket" "static" {
   force_destroy = true
 }
 
-data "google_iam_policy" "public_bucket" {
-  binding {
-    role = "roles/storage.legacyObjectReader"
-    members = [
-      "allUsers",
-    ]
-  }
+resource "google_storage_bucket_iam_member" "static_policy" {
+  bucket = google_storage_bucket.static.name
+  role = "roles/storage.legacyObjectReader"
+  member = "allUsers"
 }
 
-resource "google_storage_bucket_iam_policy" "policy" {
-  bucket      = google_storage_bucket.static.name
-  policy_data = data.google_iam_policy.public_bucket.policy_data
-}
+# resource "google_storage_bucket_acl" "image-store-acl" {
+#   bucket = google_storage_bucket.static.name
 
-
+#   predefined_acl = "publicRead"
+# }
