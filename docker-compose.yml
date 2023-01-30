@@ -4,19 +4,32 @@ services:
   frontend:
     build: ./frontend/
     volumes:
-      - static:/mnt/static/
+      - static:/mnt/static/:rw
+      - shared:/app/src/shared/:ro
+    depends_on:
+      - shared
   backend:
     build: ./backend/
     volumes:
-      - data:/mnt/data/
+      - data:/mnt/data/:rw
+      - shared:/app/src/shared/:ro
+    environment:
+      - ENTRYPOINT=https://zst-radom.edu.pl/nauczyciele/
+    depends_on:
+      - shared
   nginx:
     build: ./nginx/
     ports:
       - 80:80
     volumes:
-      - static:/mnt/static/
-      - data:/mnt/data/
+      - static:/mnt/static/:ro
+      - data:/mnt/data/:ro
+  shared:
+    build: ./shared/
+    volumes:
+      - shared:/mnt/shared/:rw
 
 volumes:
   static:
   data:
+  shared:

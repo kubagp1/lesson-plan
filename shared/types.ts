@@ -3,17 +3,14 @@
 export type CategoryName = "class" | "teacher" | "classroom";
 export const categoryNames: CategoryName[] = ["class", "teacher", "classroom"];
 
-export type Category = {
-  id: number;
-  name: string;
-}[]
+export type Category = Entity[]
 
 export type Categories = {
   class: {
-    [key: number]: Category[];
+    [key: string]: Category;
   },
-  teacher: Category[],
-  classroom: Category[],
+  teacher: Category,
+  classroom: Category,
 }
 
 // WEEKDAY
@@ -35,7 +32,7 @@ export const weekdays: Weekday[] = [
 
 // CLASSROOM, TEACHER, CLASS
 
-type Entity = {
+export type Entity = {
   planId: number;
   shortName: string;
   longName: string;
@@ -46,6 +43,9 @@ export type Teacher = Entity;
 export type Class = Entity;
 
 // PLAN
+
+export type Plan = ClassPlan | TeacherPlan | ClassroomPlan;
+export type Lesson = ClassLesson | TeacherLesson | ClassroomLesson;
 
 export type ClassLesson = {
   name: string;
