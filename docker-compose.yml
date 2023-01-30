@@ -1,0 +1,22 @@
+version: '3.9'
+
+services:
+  frontend:
+    build: ./frontend/
+    volumes:
+      - static:/mnt/static/
+  backend:
+    build: ./backend/
+    volumes:
+      - data:/mnt/data/
+  nginx:
+    build: ./nginx/
+    ports:
+      - 80:80
+    volumes:
+      - static:/mnt/static/
+      - data:/mnt/data/
+
+volumes:
+  static:
+  data:
