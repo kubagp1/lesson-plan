@@ -10,6 +10,7 @@ services:
       - shared
   backend:
     build: ./backend/
+    init: true # allows to exit gracefully
     volumes:
       - data:/mnt/data/:rw
       - shared:/app/src/shared/:ro
