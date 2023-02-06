@@ -236,7 +236,8 @@ export default class Scraper {
 
     return {
       id: plan.id,
-      timetable
+      timetable,
+      hours
     } as Plan // i hate this
   }
 

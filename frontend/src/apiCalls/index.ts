@@ -2,7 +2,7 @@ import { Plan, Categories } from '../shared/types'
 
 const entrypoint = import.meta.env.PROD
   ? location.origin + '/data/'
-  : 'http://localhost:5000/'
+  : location.protocol + '//' + location.hostname + ':5000/'
 
 const fetchData = async (endpoint: string) => {
   const response = await fetch(entrypoint + endpoint)

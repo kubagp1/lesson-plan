@@ -53,6 +53,7 @@ export type ClassPlan = {
   timetable: {
     [key in Weekday]: (ClassLesson | null)[][]
   }
+  hours: string[]
 }
 
 export type TeacherLesson = {
@@ -66,6 +67,7 @@ export type TeacherPlan = {
   timetable: {
     [key in Weekday]: (TeacherLesson | null)[][]
   }
+  hours: string[]
 }
 
 export type ClassroomLesson = {
@@ -79,4 +81,5 @@ export type ClassroomPlan = {
   timetable: {
     [key in Weekday]: (ClassroomLesson | null)[][]
   }
+  hours: string[]
 }
