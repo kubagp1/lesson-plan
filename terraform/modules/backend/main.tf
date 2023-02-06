@@ -26,7 +26,7 @@ data "archive_file" "function_zip" {
 }
 
 resource "google_storage_bucket_object" "archive" {
-  name   = "index.zip"
+  name   = "index.${data.archive_file.function_zip.output_base64sha256}.zip"
   bucket = google_storage_bucket.bucket.name
   source = data.archive_file.function_zip.output_path
 }
@@ -36,7 +36,8 @@ resource "google_cloudfunctions_function" "function" {
   description = "Scrape lesson plan and save it to a bucket."
   runtime     = "nodejs16"
 
-  available_memory_mb   = 128
+  available_memory_mb   = 256
+  timeout = 540
   source_archive_bucket = google_storage_bucket.bucket.name
   source_archive_object = google_storage_bucket_object.archive.name
   event_trigger {
@@ -48,6 +49,8 @@ resource "google_cloudfunctions_function" "function" {
   environment_variables = {
     BUCKET_NAME = google_storage_bucket.lesson_plan.name
   }
+
+  
 }
 
 // SCRAPE TOPIC

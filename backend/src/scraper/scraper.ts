@@ -11,6 +11,8 @@ import {
   WEEKDAYS,
 } from "../shared/types.js";
 
+import { sleep } from "../utils.js"
+
 export interface Urls {
   entrypoint: string;
   categories: string;
@@ -45,14 +47,28 @@ export default class Scraper {
       students: this.groupStudentsCategory(categories.students),
     };
 
-    let plans = [];
+    let plans: IPlan<IStudentPlanEntry | ITeacherPlanEntry | IRoomPlanEntry>[] = [];
+    let plansPromises: Promise<void>[] = [];
+    let resolvedPromises = 0
 
     let categoryName: CategoryName;
     for (categoryName in categories) {
       for (let plan of categories[categoryName]) {
-        plans.push(await this.scrapePlan(plan.url, plan.id, categoryName));
+        while (plansPromises.length - plans.length > 5) {
+          await sleep(100)
+        }
+
+        plansPromises.push(new Promise(async (resolve) => {
+          let scrapedPlan = await this.scrapePlan(plan.url, plan.id, categoryName)
+          plans.push(scrapedPlan)
+          console.log(`Scraped ${plans.length}/${plansPromises.length}`)
+          resolve()
+        }));
       }
     }
+
+    await Promise.all(plansPromises)
+
     return {
       categories: categoriesGrouped,
       plans,
@@ -169,6 +185,8 @@ export default class Scraper {
         })
       );
     }
+
+    console.log("Scraped plan: " + url)
 
     return {
       id,
