@@ -1,4 +1,5 @@
 import { Table, TableBody, TableCell, TableRow } from '@mui/material'
+import { useContext } from 'react'
 import type {
   ClassLesson,
   ClassroomLesson,
@@ -7,6 +8,7 @@ import type {
   TeacherLesson,
   Weekday
 } from '../shared/types'
+import { AppContext } from './App'
 
 import './WeekdaySlide.less'
 
@@ -18,9 +20,9 @@ interface WeekdaySlideProps {
 type Entry = {
   left: string
   centerAndRight: {
-    centerLeft: string
-    centerRight: string
-    right: string
+    centerLeft: { text: string; planId?: number }
+    centerRight: { text: string; planId?: number }
+    right: { text: string; planId?: number }
   }[]
 }
 
@@ -39,6 +41,8 @@ const lessonIsTeacherLesson = (lesson: Lesson): lesson is TeacherLesson => {
 }
 
 export default function WeekdaySlide({ lessons, hours }: WeekdaySlideProps) {
+  const { setPlanId } = useContext(AppContext)
+
   const entries: Entrries = hours.map((hour, i) => {
     const lessonsThisHour: Plan['timetable'][Weekday][0] = lessons[i]
 
@@ -46,17 +50,24 @@ export default function WeekdaySlide({ lessons, hours }: WeekdaySlideProps) {
       left: hour,
       centerAndRight: lessonsThisHour.map((lesson) => {
         if (lesson === null)
-          return { centerLeft: '', centerRight: '', right: '' }
+          return {
+            centerLeft: { text: '' },
+            centerRight: { text: '' },
+            right: { text: '' }
+          }
         return {
           centerLeft: lessonIsClassLesson(lesson)
-            ? lesson.teacher.shortName
-            : lesson.class.shortName,
+            ? { text: lesson.teacher.shortName, planId: lesson.teacher.planId }
+            : { text: lesson.class.shortName, planId: lesson.class.planId },
           centerRight: lessonIsClassroomLesson(lesson)
-            ? lesson.teacher.longName
-            : lesson.name,
+            ? { text: lesson.teacher.longName, planId: lesson.teacher.planId }
+            : { text: lesson.name },
           right: lessonIsClassroomLesson(lesson)
-            ? lesson.name
-            : lesson.classroom.shortName
+            ? { text: lesson.name }
+            : {
+                text: lesson.classroom.shortName,
+                planId: lesson.classroom.planId
+              }
         }
       })
     }
@@ -77,17 +88,59 @@ export default function WeekdaySlide({ lessons, hours }: WeekdaySlideProps) {
                 </TableCell>
                 <TableCell size={cellSize} className="centerLeft">
                   {entry.centerAndRight.map((centerAndRight, i) => (
-                    <div key={i}>{centerAndRight.centerLeft}</div>
+                    <div
+                      key={i}
+                      onClick={
+                        centerAndRight.centerLeft.planId !== undefined
+                          ? () => {
+                              setPlanId(centerAndRight.centerLeft.planId!)
+                            }
+                          : undefined
+                      }
+                    >
+                      {centerAndRight.centerLeft.text}
+                    </div>
                   ))}
                 </TableCell>
                 <TableCell size={cellSize} className="centerRight">
                   {entry.centerAndRight.map((centerAndRight, i) => (
-                    <div key={i}>{centerAndRight.centerRight}</div>
+                    <div
+                      key={i}
+                      onClick={
+                        centerAndRight.centerRight.planId !== undefined
+                          ? () => {
+                              setPlanId(centerAndRight.centerRight.planId!)
+                            }
+                          : undefined
+                      }
+                    >
+                      {centerAndRight.centerRight.text}
+                    </div>
                   ))}
                 </TableCell>
-                <TableCell size={cellSize}>
+                <TableCell
+                  size={cellSize}
+                  onClick={
+                    entry.centerAndRight[0].right.planId !== undefined
+                      ? () => {
+                          setPlanId(entry.centerAndRight[0].right.planId!)
+                        }
+                      : undefined
+                  }
+                >
                   {entry.centerAndRight.map((centerAndRight, i) => (
-                    <div key={i}>{centerAndRight.right}</div>
+                    <div
+                      key={i}
+                      onClick={
+                        centerAndRight.right.planId !== undefined
+                          ? () => {
+                              setPlanId(centerAndRight.right.planId!)
+                            }
+                          : undefined
+                      }
+                    >
+                      {centerAndRight.right.text}
+                    </div>
                   ))}
                 </TableCell>
               </TableRow>

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { createContext, useEffect, useState } from 'react'
 import { AppBar, Toolbar } from '@mui/material'
 import PlanSelector from './PlanSelector'
 import WeekdayTabs, { getCurrentWeekday } from './WeekdayTabs'
@@ -14,6 +14,10 @@ function getPlanIdFromUrl(): number | null {
   const match = regex.exec(currentUrl)?.[1]
   return match === undefined ? null : parseInt(match)
 }
+
+export const AppContext = createContext({
+  setPlanId: (planId: number | null): void => {}
+})
 
 export default function App() {
   const [planId, setPlanId] = useState<number | null>(getPlanIdFromUrl())
@@ -35,33 +39,42 @@ export default function App() {
   }, [planId])
 
   return (
-    <Box
-      sx={{
-        display: 'flex',
-        flexDirection: 'column',
-        height: '100%'
+    <AppContext.Provider
+      value={{
+        setPlanId
       }}
     >
       <Box
         sx={{
-          position: 'sticky',
-          top: 0,
-          zIndex: 1100, // z-index of AppBar
-          backgroundColor: '#fff'
+          display: 'flex',
+          flexDirection: 'column',
+          height: '100%'
         }}
       >
-        <AppBar position="static">
-          <Toolbar>
-            <PlanSelector planId={planId} setPlanId={setPlanId}></PlanSelector>
-          </Toolbar>
-        </AppBar>
-        <WeekdayTabs weekday={weekday} setWeekday={setWeekday}></WeekdayTabs>
+        <Box
+          sx={{
+            position: 'sticky',
+            top: 0,
+            zIndex: 1100, // z-index of AppBar
+            backgroundColor: '#fff'
+          }}
+        >
+          <AppBar position="static">
+            <Toolbar>
+              <PlanSelector
+                planId={planId}
+                setPlanId={setPlanId}
+              ></PlanSelector>
+            </Toolbar>
+          </AppBar>
+          <WeekdayTabs weekday={weekday} setWeekday={setWeekday}></WeekdayTabs>
+        </Box>
+        <WeekdaySlider
+          planId={planId}
+          weekday={weekday}
+          setWeekday={setWeekday}
+        ></WeekdaySlider>
       </Box>
-      <WeekdaySlider
-        planId={planId}
-        weekday={weekday}
-        setWeekday={setWeekday}
-      ></WeekdaySlider>
-    </Box>
+    </AppContext.Provider>
   )
 }

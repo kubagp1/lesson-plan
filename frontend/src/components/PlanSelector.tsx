@@ -36,21 +36,17 @@ function updateSavedSession(session: SavedSession) {
 
 function getSavedSessionPlanIdOrDefault(
   categories: Categories,
-  categoryName: CategoryName,
-  grade?: string
+  categoryName: CategoryName
 ): number {
-  if (!grade && categoryName === 'class')
-    throw new Error('Grade is required for class category')
-
   let session = getSavedSession()
 
   let planId: number
-  if (categoryName === 'class' && grade) {
-    // && grade is a type guard
-    let defaultPlanId = categories.class[grade][0].planId
+  if (categoryName === 'class') {
+    let defaultPlanId =
+      categories.class[Object.keys(categories.class)[0]][0].planId
     if (!session.classShortName) planId = defaultPlanId
     else {
-      let plansToSearch = categories.class[grade]
+      let plansToSearch = Object.values(categories.class).flat()
       planId =
         plansToSearch.find((p) => p.shortName === session.classShortName!)
           ?.planId || defaultPlanId
@@ -109,26 +105,25 @@ export default function PlanSelector({ planId, setPlanId }: PlanSelectorProps) {
       if (planId === null) throw new Error('No planId in url')
 
       let categoryName: CategoryName
-      let grade: string
+      let grade: string | undefined
       if (categories.classroom.find((p) => p.planId === planId)) {
         categoryName = 'classroom'
-        grade = Object.keys(categories.class)[0]
       } else if (categories.teacher.find((p) => p.planId === planId)) {
         categoryName = 'teacher'
-        grade = Object.keys(categories.class)[0]
       } else {
         categoryName = 'class'
-        grade = Object.keys(categories.class).find((g) =>
-          categories.class[g].find((p) => p.planId === planId)
+        grade = Object.keys(categories.class).find(
+          (g) =>
+            categories.class[g].find((p) => p.planId === planId) !== undefined
         )!
-        if (!grade) throw new Error('No grade found')
+        if (grade === undefined) throw new Error('No grade found')
       }
-
       setSelectedCategoryName(categoryName)
-      setSelectedGrade(grade)
+      if (categoryName === 'class') {
+        setSelectedGrade(grade!)
+      } // Don't change grade when it's not needed
     } catch (error) {
       failedToGetFromPlanId = true
-      console.log("Couldn't get from planId", error)
     }
 
     if (failedToGetFromPlanId) {
@@ -151,11 +146,7 @@ export default function PlanSelector({ planId, setPlanId }: PlanSelectorProps) {
         grade = Object.keys(categories.class)[0]
       }
 
-      let planId = getSavedSessionPlanIdOrDefault(
-        categories,
-        categoryName,
-        grade
-      )
+      let planId = getSavedSessionPlanIdOrDefault(categories, categoryName)
 
       setSelectedCategoryName(categoryName)
       setSelectedGrade(grade)
@@ -163,26 +154,15 @@ export default function PlanSelector({ planId, setPlanId }: PlanSelectorProps) {
     }
   }, [planId, categories])
 
-  if (
-    categories === null ||
-    selectedCategoryName === null ||
-    selectedGrade === null ||
-    planId === null
-  ) {
+  if (categories === null || selectedCategoryName === null || planId === null) {
     return <span>{fetchingError || 'Ładowanie...'}</span>
   }
 
   const handleCategoryNameChange = (e: SelectChangeEvent) => {
     const newCategoryName = e.target.value as CategoryName
 
-    setSelectedCategoryName(newCategoryName)
-    setPlanId(
-      getSavedSessionPlanIdOrDefault(
-        categories,
-        newCategoryName,
-        selectedGrade!
-      )
-    )
+    // setSelectedCategoryName(newCategoryName)
+    setPlanId(getSavedSessionPlanIdOrDefault(categories, newCategoryName))
 
     updateSavedSession({ categoryName: newCategoryName })
   }
@@ -263,7 +243,7 @@ export default function PlanSelector({ planId, setPlanId }: PlanSelectorProps) {
 
     var availablePlans = categories.class[selectedGrade!]
   } else {
-    var availablePlans = categories[selectedCategoryName!]
+    var availablePlans = categories[selectedCategoryName]
   }
 
   selects.push(
