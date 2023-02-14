@@ -5,6 +5,7 @@ import WeekdayTabs, { getCurrentWeekday } from './WeekdayTabs'
 import { Weekday } from '../shared/types'
 import { Box } from '@mui/system'
 import WeekdaySlider from './WeekdaySlider'
+import zIndex from '@mui/material/styles/zIndex'
 
 export default function App() {
   const [planId, setPlanId] = useState<number | null>(null)
@@ -18,12 +19,21 @@ export default function App() {
         height: '100%'
       }}
     >
-      <AppBar position="static">
-        <Toolbar>
-          <PlanSelector planId={planId} setPlanId={setPlanId}></PlanSelector>
-        </Toolbar>
-      </AppBar>
-      <WeekdayTabs weekday={weekday} setWeekday={setWeekday}></WeekdayTabs>
+      <Box
+        sx={{
+          position: 'sticky',
+          top: 0,
+          zIndex: 1100, // z-index of AppBar
+          backgroundColor: '#fff'
+        }}
+      >
+        <AppBar position="static">
+          <Toolbar>
+            <PlanSelector planId={planId} setPlanId={setPlanId}></PlanSelector>
+          </Toolbar>
+        </AppBar>
+        <WeekdayTabs weekday={weekday} setWeekday={setWeekday}></WeekdayTabs>
+      </Box>
       <WeekdaySlider
         planId={planId}
         weekday={weekday}

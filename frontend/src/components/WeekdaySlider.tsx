@@ -1,16 +1,9 @@
 import { useEffect, useState } from 'react'
 
-import { Carousel } from 'react-responsive-carousel'
-import 'react-responsive-carousel/lib/styles/carousel.min.css'
-
-import './../carousel-overrides.less'
-// This is surpisingly the least painful way to have a swipeable things
-// I have tried other libraries, but they all had some issues
-// This one is the least bad (only weird DOM and some annoying defaults), but still not great
-
 import { Plan, Weekday, weekdays } from '../shared/types'
 import WeekdaySlide from './WeekdaySlide'
 import apiCalls from '../apiCalls'
+import EmblaCarousel from './EmblaCarousel'
 
 interface WeekdayViewsProps {
   planId: number | null
@@ -49,15 +42,11 @@ export default function WeekdayViews({
   )
 
   return (
-    <Carousel
-      selectedItem={weekdays.indexOf(weekday)}
+    <EmblaCarousel
+      index={weekdays.indexOf(weekday)}
       onChange={(index) => {
         setWeekday(weekdays[index])
       }}
-      showThumbs={false}
-      showArrows={false}
-      showIndicators={false}
-      showStatus={false}
     >
       {weekdays.map((weekday) => (
         <WeekdaySlide
@@ -66,6 +55,6 @@ export default function WeekdayViews({
           hours={plan!.hours}
         ></WeekdaySlide>
       ))}
-    </Carousel>
+    </EmblaCarousel>
   )
 }
