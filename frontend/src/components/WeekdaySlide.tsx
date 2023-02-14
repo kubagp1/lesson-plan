@@ -66,28 +66,28 @@ export default function WeekdaySlide({ lessons, hours }: WeekdaySlideProps) {
     <div style={{ height: '100%' }} className="WeekdaySlide">
       <Table size="medium">
         <TableBody>
-          {entries.map((entry) => {
+          {entries.map((entry, i) => {
             const cellSize =
               entry.centerAndRight.length > 1 ? 'small' : 'medium'
 
             return (
-              <TableRow>
+              <TableRow key={i}>
                 <TableCell size={cellSize} className="left">
                   {entry.left}
                 </TableCell>
                 <TableCell size={cellSize} className="centerLeft">
-                  {entry.centerAndRight.map((centerAndRight) => (
-                    <div>{centerAndRight.centerLeft}</div>
+                  {entry.centerAndRight.map((centerAndRight, i) => (
+                    <div key={i}>{centerAndRight.centerLeft}</div>
                   ))}
                 </TableCell>
                 <TableCell size={cellSize} className="centerRight">
-                  {entry.centerAndRight.map((centerAndRight) => (
-                    <div>{centerAndRight.centerRight}</div>
+                  {entry.centerAndRight.map((centerAndRight, i) => (
+                    <div key={i}>{centerAndRight.centerRight}</div>
                   ))}
                 </TableCell>
                 <TableCell size={cellSize}>
-                  {entry.centerAndRight.map((centerAndRight) => (
-                    <div>{centerAndRight.right}</div>
+                  {entry.centerAndRight.map((centerAndRight, i) => (
+                    <div key={i}>{centerAndRight.right}</div>
                   ))}
                 </TableCell>
               </TableRow>
