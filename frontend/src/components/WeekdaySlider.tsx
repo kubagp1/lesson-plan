@@ -4,6 +4,7 @@ import { Plan, Weekday, weekdays } from '../shared/types'
 import WeekdaySlide from './WeekdaySlide'
 import apiCalls from '../apiCalls'
 import EmblaCarousel from './EmblaCarousel'
+import { Box, CircularProgress } from '@mui/material'
 
 interface WeekdayViewsProps {
   planId: number | null
@@ -29,7 +30,14 @@ export default function WeekdayViews({
     })
   }, [planId])
 
-  if (!isLoaded) return <div>Loading...</div>
+  if (!isLoaded)
+    return (
+      <Box
+        sx={{ display: 'flex', justifyContent: 'center', paddingTop: '16px' }}
+      >
+        <CircularProgress />
+      </Box>
+    )
 
   type WeekdayLessonDict = { [K in Weekday]: Plan['timetable'][Weekday] }
   // for readability
