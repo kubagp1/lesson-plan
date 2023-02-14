@@ -79,6 +79,14 @@ function getSavedSessionPlanIdOrDefault(
   return planId!
 }
 
+function getPlanIdFromUrl(): number | null {
+  const currentUrl = window.location.pathname
+
+  const regex = /^\/plan\/(\d+)/
+
+  return Number(regex.exec(currentUrl)?.[1]) || null
+}
+
 interface PlanSelectorProps {
   planId: number | null
   setPlanId: (planId: number | null) => void
@@ -97,37 +105,72 @@ export default function PlanSelector({ planId, setPlanId }: PlanSelectorProps) {
       .then((fetchedCategories) => {
         setCategories(fetchedCategories)
 
-        let session = getSavedSession()
+        let failedToGetFromUrl = false
+        try {
+          const planIdFromUrl = getPlanIdFromUrl()
+          if (planIdFromUrl === null) throw new Error('No planId in url')
 
-        let categoryName: CategoryName
-        if (
-          session.categoryName &&
-          fetchedCategories.hasOwnProperty(session.categoryName)
-        ) {
-          categoryName = session.categoryName
-        } else {
-          categoryName = 'class'
+          let categoryName: CategoryName
+          let grade: string
+          if (
+            fetchedCategories.classroom.find((p) => p.planId === planIdFromUrl)
+          ) {
+            categoryName = 'classroom'
+            grade = Object.keys(fetchedCategories.class)[0]
+          } else if (
+            fetchedCategories.teacher.find((p) => p.planId === planIdFromUrl)
+          ) {
+            categoryName = 'teacher'
+            grade = Object.keys(fetchedCategories.class)[0]
+          } else {
+            categoryName = 'class'
+            grade = Object.keys(fetchedCategories.class).find((g) =>
+              fetchedCategories.class[g].find((p) => p.planId === planIdFromUrl)
+            )!
+            if (!grade) throw new Error('No grade found')
+          }
+
+          setSelectedCategoryName(categoryName)
+          setSelectedGrade(grade)
+          setPlanId(planIdFromUrl)
+        } catch (error) {
+          failedToGetFromUrl = true
+          console.log(error)
         }
 
-        let grade: string
-        if (
-          session.grade &&
-          fetchedCategories.class.hasOwnProperty(session.grade)
-        ) {
-          grade = session.grade
-        } else {
-          grade = Object.keys(fetchedCategories.class)[0]
+        if (failedToGetFromUrl) {
+          let session = getSavedSession()
+
+          let categoryName: CategoryName
+          if (
+            session.categoryName &&
+            fetchedCategories.hasOwnProperty(session.categoryName)
+          ) {
+            categoryName = session.categoryName
+          } else {
+            categoryName = 'class'
+          }
+
+          let grade: string
+          if (
+            session.grade &&
+            fetchedCategories.class.hasOwnProperty(session.grade)
+          ) {
+            grade = session.grade
+          } else {
+            grade = Object.keys(fetchedCategories.class)[0]
+          }
+
+          let planId = getSavedSessionPlanIdOrDefault(
+            fetchedCategories,
+            categoryName,
+            grade
+          )
+
+          setSelectedCategoryName(categoryName)
+          setSelectedGrade(grade)
+          setPlanId(planId!)
         }
-
-        let planId = getSavedSessionPlanIdOrDefault(
-          fetchedCategories,
-          categoryName,
-          grade
-        )
-
-        setSelectedCategoryName(categoryName)
-        setSelectedGrade(grade)
-        setPlanId(planId!)
       })
       .catch((err) => {
         setFetchingError(err.message)
