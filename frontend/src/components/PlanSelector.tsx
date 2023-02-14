@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 
 import {
+  Box,
   createTheme,
   MenuItem,
   Select,
@@ -254,7 +255,14 @@ export default function PlanSelector({ planId, setPlanId }: PlanSelectorProps) {
         }
       })}
     >
-      {selects}
+      <Box
+        sx={{
+          display: 'flex',
+          gap: '16px'
+        }}
+      >
+        {selects}
+      </Box>
     </ThemeProvider>
   )
 }
