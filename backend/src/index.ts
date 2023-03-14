@@ -5,9 +5,9 @@ import Scraper from './scraper.js'
 const interval = 1000 * 60 * 60 // 1 hour
 
 if (process.env.ENTRYPOINT === undefined) {
-  console.log('Using default entrypoint: http://localhost:3000/')
+  console.log('Using default entrypoint: http://127.0.0.1:3000/')
   console.log('Using default output directory: ./output/')
-  var entrypoint = 'http://localhost:3000/'
+  var entrypoint = 'http://127.0.0.1:3000/'
   var outputDir = './output/'
 } else {
   var entrypoint = process.env.ENTRYPOINT
