@@ -2,6 +2,8 @@
 
 This project scrapes and processes data off the school website using node.js every hour. It has its UI built with React and MUI.
 
+The frontend of the application is a Single Page Application built with React and MUI.
+
 ## Features
 
 - Click on any teacher room or class to redirect to its plan
@@ -14,7 +16,7 @@ This project scrapes and processes data off the school website using node.js eve
 
 ## Technologies Used
 
-- Built with TypeScript
+- Built with TypeScript, React and MUI
 - Uses Vite
 - Uses Docker
 
