@@ -52,17 +52,17 @@ function configurationReducer(configuration: Configuration, action: Action) {
 
 const initialConfiguration: Configuration = getFromLocalStorage() ?? {
   class: {
-    centerLeft: false,
+    centerLeft: true,
     centerRight: false,
     right: false
   },
   classroom: {
     centerLeft: false,
     centerRight: false,
-    right: false
+    right: true
   },
   teacher: {
-    centerLeft: false,
+    centerLeft: true,
     centerRight: false,
     right: false
   }
