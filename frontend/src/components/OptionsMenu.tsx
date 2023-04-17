@@ -28,8 +28,18 @@ export default function OptionsMenu() {
       <IconButton size="large" edge="end" color="inherit" onClick={handleClick}>
         <MoreIcon />
       </IconButton>
-      <Menu anchorEl={anchorEl} open={open} onClose={handleClose}>
-        <MenuItem onClick={handleHideColumnsClick}>Ukryj kolumny</MenuItem>
+      <Menu
+        anchorEl={anchorEl}
+        open={open}
+        onClose={handleClose}
+        anchorOrigin={{
+          vertical: 'top',
+          horizontal: 'right'
+        }}
+      >
+        <MenuItem onClick={handleHideColumnsClick}>
+          Ukryj / pokaż kolumny
+        </MenuItem>
       </Menu>
       <HideColumnsDialog
         open={hideColumnsDialogOpen}
