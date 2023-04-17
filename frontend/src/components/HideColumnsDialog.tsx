@@ -41,7 +41,7 @@ export default function HideColumnsDialog({
           <FormControlLabel
             control={<Checkbox />}
             label={label}
-            value={configuration[category][columns[i]]}
+            checked={configuration[category][columns[i]]}
             onChange={(e, checked) =>
               dispatch({
                 category,
@@ -58,18 +58,19 @@ export default function HideColumnsDialog({
   return (
     <div>
       <Dialog open={open} onClose={handleClose} fullWidth>
+        {/* {JSON.stringify(configuration, null, 2)} */}
         <DialogTitle variant="h5">Ukryj kolumny</DialogTitle>
         <DialogContent>
-          <DialogContentText sx={{ marginBottom: '8px' }}>
+          <DialogContentText sx={{ marginBottom: '12px' }}>
             Zaznacz kolumny które mają być ukryte dla każdej kategorii
           </DialogContentText>
           <section>
             <Typography variant="h6">Uczniowie</Typography>
-            {checkBoxesFactory('class', ['Klasa', 'Nauczyciel', 'Lekcja'])}
+            {checkBoxesFactory('class', ['Nauczyciel', 'Lekcja', 'Sala'])}
           </section>
           <section>
             <Typography variant="h6">Nauczyciele</Typography>
-            {checkBoxesFactory('teacher', ['Klasa', 'Nauczyciel', 'Lekcja'])}
+            {checkBoxesFactory('teacher', ['Klasa', 'Lekcja', 'Sala'])}
           </section>
           <section>
             <Typography variant="h6">Sale</Typography>

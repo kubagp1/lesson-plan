@@ -1,6 +1,7 @@
 import { Table, TableBody, TableCell, TableRow } from '@mui/material'
 import { useContext, useEffect, useState } from 'react'
 import type {
+  CategoryName,
   ClassLesson,
   ClassroomLesson,
   Lesson,
@@ -9,6 +10,7 @@ import type {
   Weekday
 } from '../shared/types'
 import { AppContext } from './App'
+import { HideColumnsContext } from './HideColumnsContext'
 
 import './WeekdaySlide.less'
 
@@ -97,6 +99,7 @@ function getSecondsSinceMidnight(): number {
 export default function WeekdaySlide({ lessons, hours }: WeekdaySlideProps) {
   const { setPlanId } = useContext(AppContext)
   const [currentTime, setCurrentTime] = useState(getSecondsSinceMidnight())
+  const hideColumnsConfiguration = useContext(HideColumnsContext)
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -143,6 +146,33 @@ export default function WeekdaySlide({ lessons, hours }: WeekdaySlideProps) {
     }
   })
 
+  // Default value, if below loop can't determine the category, then we might as well use the default value because that means there are no lessons
+  let category: CategoryName = 'class'
+
+  // Can't use find because of https://github.com/microsoft/TypeScript/issues/44373
+  // Won't use AppContext because I'm scared of the consequences
+  for (let lessonGroup of lessons) {
+    for (let lesson of lessonGroup) {
+      if (lesson === null) continue
+      if (lessonIsClassroomLesson(lesson)) {
+        category = 'classroom'
+        break
+      }
+      if (lessonIsClassLesson(lesson)) {
+        category = 'class'
+        break
+      }
+      if (lessonIsTeacherLesson(lesson)) {
+        category = 'teacher'
+        break
+      }
+    }
+  }
+
+  const hideCenterLeft = hideColumnsConfiguration[category].centerLeft
+  const hideCenterRight = hideColumnsConfiguration[category].centerRight
+  const hideRight = hideColumnsConfiguration[category].right
+
   return (
     <div style={{ height: '100%' }} className="WeekdaySlide">
       <Table size="medium">
@@ -161,7 +191,11 @@ export default function WeekdaySlide({ lessons, hours }: WeekdaySlideProps) {
                 <TableCell size={cellSize} className="left">
                   {entry.left}
                 </TableCell>
-                <TableCell size={cellSize} className="centerLeft">
+                <TableCell
+                  size={cellSize}
+                  className="centerLeft"
+                  sx={hideCenterLeft ? { display: 'none' } : undefined}
+                >
                   {entry.centerAndRight.map((centerAndRight, i) => (
                     <div
                       key={i}
@@ -177,7 +211,11 @@ export default function WeekdaySlide({ lessons, hours }: WeekdaySlideProps) {
                     </div>
                   ))}
                 </TableCell>
-                <TableCell size={cellSize} className="centerRight">
+                <TableCell
+                  size={cellSize}
+                  className="centerRight"
+                  sx={hideCenterRight ? { display: 'none' } : undefined}
+                >
                   {entry.centerAndRight.map((centerAndRight, i) => (
                     <div
                       key={i}
@@ -202,6 +240,7 @@ export default function WeekdaySlide({ lessons, hours }: WeekdaySlideProps) {
                         }
                       : undefined
                   }
+                  sx={hideRight ? { display: 'none' } : undefined}
                 >
                   {entry.centerAndRight.map((centerAndRight, i) => (
                     <div
