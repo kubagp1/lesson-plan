@@ -5,6 +5,7 @@ import WeekdayTabs, { getCurrentWeekday } from './WeekdayTabs'
 import { Weekday } from '../shared/types'
 import { Box } from '@mui/system'
 import WeekdaySlider from './WeekdaySlider'
+import OptionsMenu from './OptionsMenu'
 
 function getPlanIdFromUrl(): number | null {
   const currentUrl = window.location.pathname
@@ -61,10 +62,13 @@ export default function App() {
         >
           <AppBar position="static">
             <Toolbar>
-              <PlanSelector
-                planId={planId}
-                setPlanId={setPlanId}
-              ></PlanSelector>
+              <Box sx={{ flexGrow: 1 }}>
+                <PlanSelector
+                  planId={planId}
+                  setPlanId={setPlanId}
+                ></PlanSelector>
+              </Box>
+              <OptionsMenu />
             </Toolbar>
           </AppBar>
           <WeekdayTabs weekday={weekday} setWeekday={setWeekday}></WeekdayTabs>
