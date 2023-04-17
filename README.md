@@ -22,6 +22,7 @@ This project scrapes and processes data off the school website using node.js eve
 
 <p float="left">
   <img alt="Screenshot of the main inteface" src="/screenshots/screenshot1.png" width="33%" >
+  <img alt="Screenshot of the main inteface with a select list expanded" src="/screenshots/screenshot2.png" width="33%" >
 </p>
 
 ## Running the Project Locally
