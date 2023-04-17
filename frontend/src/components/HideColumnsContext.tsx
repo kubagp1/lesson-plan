@@ -37,16 +37,20 @@ export function HideColumnsProvider({
 function configurationReducer(configuration: Configuration, action: Action) {
   const { category, column, value } = action
 
-  return {
+  const newConfiguration = {
     ...configuration,
     [category]: {
       ...configuration[category],
       [column]: value
     }
   }
+
+  localStorage.setItem('hideColumns', JSON.stringify(newConfiguration))
+
+  return newConfiguration
 }
 
-const initialConfiguration: Configuration = {
+const initialConfiguration: Configuration = getFromLocalStorage() ?? {
   class: {
     centerLeft: false,
     centerRight: false,
@@ -69,3 +73,14 @@ export const HideColumnsContext =
 export const HideColumnsDispatchContext = createContext<Dispatch<Action>>(
   () => {}
 )
+
+function getFromLocalStorage(): Configuration | null {
+  const storedConfiguration = localStorage.getItem('hideColumns')
+  if (storedConfiguration === null) return null
+  try {
+    return JSON.parse(storedConfiguration) as Configuration
+  } catch (e) {
+    localStorage.removeItem('hideColumns')
+    return null
+  }
+}
