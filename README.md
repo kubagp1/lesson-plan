@@ -23,9 +23,9 @@ The frontend of the application is a Single Page Application built with React an
 ## Screenshots
 
 <p float="left">
-  <img alt="Screenshot of the main inteface" src="/screenshots/screenshot1.png" width="33%" >
-  <img alt="Screenshot of the main inteface from a different category" src="/screenshots/screenshot2.png" width="33%" >
-  <img alt="Screenshot of the hiding columns menu" src="/screenshots/screenshot3.png" width="33%" >
+  <img alt="Screenshot of the main inteface" src="/screenshots/screenshot1.png" width="30%" >
+  <img alt="Screenshot of the main inteface from a different category" src="/screenshots/screenshot2.png" width="30%" >
+  <img alt="Screenshot of the hiding columns menu" src="/screenshots/screenshot3.png" width="30%" >
 </p>
 
 ## Running the Project Locally
