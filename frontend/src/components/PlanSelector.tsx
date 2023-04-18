@@ -154,6 +154,24 @@ export default function PlanSelector({ planId, setPlanId }: PlanSelectorProps) {
     }
   }, [planId, categories])
 
+  // setting document title
+  useEffect(() => {
+    if (categories === null || planId === null) return
+
+    let flatCategories = [
+      ...categories.teacher,
+      ...categories.classroom,
+      ...Object.values(categories.class).flat()
+    ]
+
+    console.log({ flatCategories, planId })
+
+    let planName =
+      flatCategories.find((p) => p.planId === planId)?.longName ?? 'default'
+
+    document.title = `${planName} - Plan lekcji`
+  }, [categories, planId])
+
   if (categories === null || selectedCategoryName === null || planId === null) {
     return <span>{fetchingError || 'Ładowanie...'}</span>
   }
