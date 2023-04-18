@@ -39,6 +39,7 @@ export default function HideColumnsDialog({
       <FormGroup row>
         {labels.map((label, i) => (
           <FormControlLabel
+            key={i}
             control={<Checkbox />}
             label={label}
             checked={configuration[category][columns[i]]}
