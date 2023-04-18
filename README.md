@@ -9,7 +9,7 @@ The frontend of the application is a Single Page Application built with React an
 - Click on any teacher room or class to redirect to its plan
 - Dynamic URL routing
 - Single Page Application
-- User can hide unnecessary columns (coming soon)
+- User can hide unnecessary columns
 - Highlight current lesson
 - Title of the website changes when you change the plan
 - Available from a single IP address
@@ -24,7 +24,8 @@ The frontend of the application is a Single Page Application built with React an
 
 <p float="left">
   <img alt="Screenshot of the main inteface" src="/screenshots/screenshot1.png" width="33%" >
-  <img alt="Screenshot of the main inteface with a select list expanded" src="/screenshots/screenshot2.png" width="33%" >
+  <img alt="Screenshot of the main inteface from a different category" src="/screenshots/screenshot2.png" width="33%" >
+  <img alt="Screenshot of the hiding columns menu" src="/screenshots/screenshot3.png" width="33%" >
 </p>
 
 ## Running the Project Locally
