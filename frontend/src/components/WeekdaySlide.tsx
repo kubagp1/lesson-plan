@@ -14,9 +14,10 @@ import { HideColumnsContext } from './HideColumnsContext'
 
 import './WeekdaySlide.less'
 
-interface WeekdaySlideProps {
+type WeekdaySlideProps = {
   lessons: Plan['timetable'][Weekday]
   hours: string[]
+  isToday: boolean
 }
 
 type Entry = {
@@ -96,7 +97,11 @@ function getSecondsSinceMidnight(): number {
   return hours * 3600 + minutes * 60
 }
 
-export default function WeekdaySlide({ lessons, hours }: WeekdaySlideProps) {
+export default function WeekdaySlide({
+  lessons,
+  hours,
+  isToday
+}: WeekdaySlideProps) {
   const { setPlanId } = useContext(AppContext)
   const [currentTime, setCurrentTime] = useState(getSecondsSinceMidnight())
   const hideColumnsConfiguration = useContext(HideColumnsContext)
@@ -138,11 +143,12 @@ export default function WeekdaySlide({ lessons, hours }: WeekdaySlideProps) {
               }
         }
       }),
-      higlight: shouldBeHighlighted(
-        hoursAsTimeRanges[i],
-        i > 0 ? hoursAsTimeRanges[i - 1][1] : -1,
-        currentTime
-      )
+      higlight:
+        shouldBeHighlighted(
+          hoursAsTimeRanges[i],
+          i > 0 ? hoursAsTimeRanges[i - 1][1] : -1,
+          currentTime
+        ) && isToday
     }
   })
 

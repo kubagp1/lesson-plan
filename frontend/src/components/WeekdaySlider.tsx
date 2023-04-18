@@ -61,8 +61,21 @@ export default function WeekdayViews({
           key={weekday}
           lessons={weekdayLessonDict[weekday]}
           hours={plan!.hours}
+          isToday={isToday(weekday)}
         ></WeekdaySlide>
       ))}
     </EmblaCarousel>
   )
+}
+
+function isToday(weekday: Weekday): boolean {
+  const today = new Date().getDay()
+  const days: { [key: number]: Weekday } = {
+    1: 'monday',
+    2: 'tuesday',
+    3: 'wednesday',
+    4: 'thursday',
+    5: 'friday'
+  }
+  return days[today] === weekday
 }
