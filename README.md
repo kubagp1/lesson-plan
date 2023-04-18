@@ -13,6 +13,7 @@ The frontend of the application is a Single Page Application built with React an
 - Highlight current lesson
 - Title of the website changes when you change the plan
 - Available from a single IP address
+- 95 lighthouse performance score
 
 ## Technologies Used
 
