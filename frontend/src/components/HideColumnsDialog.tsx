@@ -56,6 +56,12 @@ export default function HideColumnsDialog({
     )
   }
 
+  const restoreDefaults = () => {
+    dispatch({
+      restoreDefaults: true
+    })
+  }
+
   return (
     <div>
       <Dialog open={open} onClose={handleClose} fullWidth>
@@ -77,7 +83,10 @@ export default function HideColumnsDialog({
             {checkBoxesFactory('classroom', ['Klasa', 'Nauczyciel', 'Lekcja'])}
           </section>
         </DialogContent>
-        <DialogActions>
+        <DialogActions sx={{ justifyContent: 'space-between' }}>
+          <Button color="error" onClick={restoreDefaults}>
+            przywróć domyślne
+          </Button>
           <Button onClick={handleClose}>zamknij</Button>
         </DialogActions>
       </Dialog>

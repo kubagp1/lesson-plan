@@ -9,11 +9,15 @@ export type Configuration = {
   }
 }
 
-export type Action = {
-  category: CategoryName
-  column: ColumnName
-  value: boolean
-}
+export type Action =
+  | {
+      category: CategoryName
+      column: ColumnName
+      value: boolean
+    }
+  | {
+      restoreDefaults: true
+    }
 
 export function HideColumnsProvider({
   children
@@ -35,6 +39,11 @@ export function HideColumnsProvider({
 }
 
 function configurationReducer(configuration: Configuration, action: Action) {
+  if ('restoreDefaults' in action) {
+    localStorage.removeItem('hideColumns')
+    return initialConfiguration
+  }
+
   const { category, column, value } = action
 
   const newConfiguration = {
