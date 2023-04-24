@@ -26,7 +26,7 @@ export default function OptionsMenu() {
         setTooltipOpen(false)
         document.removeEventListener('click', handleAnyClick)
         document.removeEventListener('touchstart', handleAnyClick)
-      }, 3000)
+      }, 5000)
 
       document.addEventListener('click', handleAnyClick)
       document.addEventListener('touchstart', handleAnyClick)
