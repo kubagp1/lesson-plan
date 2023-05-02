@@ -33,7 +33,7 @@ The frontend of the application is a Single Page Application built with React an
 
 ### For Production
 
-To run this project locally for production you need to `docker-compose up`
+To run this project locally for production you need to `docker-compose up --build`
 
 ### For Development
 
@@ -41,4 +41,4 @@ To run this project for development you need to:
 
 1. Serve website for scraping on port 3000
 2. In `backend/` run `npm start` and then `python ./serve_output.py`
-3. In `frontend` run `npm dev`
+3. In `frontend/` run `npm dev`
