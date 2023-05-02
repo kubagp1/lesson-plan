@@ -15,25 +15,37 @@ if (process.env.ENTRYPOINT === undefined) {
 }
 
 async function mainLoop() {
-  let scraper = new Scraper({
-    entrypoint,
-    categories: 'lista.html'
-  })
+  let hasFailed = false
+  try {
+    let scraper = new Scraper({
+      entrypoint,
+      categories: 'lista.html'
+    })
 
-  let scraperResult = await scraper.scrape()
+    let scraperResult = await scraper.scrape()
 
-  await fsExtra.emptyDir(outputDir)
-  await fs.writeFile(
-    outputDir + 'categories',
-    JSON.stringify(scraperResult.categories)
-  )
-  await fs.mkdir(outputDir + 'plans')
-  for (let plan of Object.entries(scraperResult.plans)) {
-    await fs.writeFile(outputDir + 'plans/' + plan[0], JSON.stringify(plan[1]))
+    await fsExtra.emptyDir(outputDir)
+    await fs.writeFile(
+      outputDir + 'categories',
+      JSON.stringify(scraperResult.categories)
+    )
+    await fs.mkdir(outputDir + 'plans')
+    for (let plan of Object.entries(scraperResult.plans)) {
+      await fs.writeFile(
+        outputDir + 'plans/' + plan[0],
+        JSON.stringify(plan[1])
+      )
+    }
+  } catch (e) {
+    hasFailed = true
+    console.error(e)
   }
+
   setTimeout(mainLoop, interval)
   console.log(
-    'Scraping finished. Next scraping will start at ' +
+    `Scraping finished ${
+      hasFailed ? 'UNSUCCESSFULLY' : 'successfully'
+    }. Next scraping will start at ` +
       new Date(Date.now() + interval).toLocaleString('pl-PL', {
         timeZone: 'Europe/Warsaw'
       })
