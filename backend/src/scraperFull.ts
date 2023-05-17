@@ -10,7 +10,7 @@ import {
   Teacher
 } from './shared/types.js'
 
-type ScrapeResult = {
+export type ScrapeResult = {
   categories: Categories
   plans: {
     [key: string]: Plan
@@ -24,7 +24,7 @@ type ScrapePlanListResult = {
   id: any
 }[]
 
-function* idGenerator() {
+export function* idGenerator(): Generator<number> {
   let id = 0
   while (true) {
     yield id++
@@ -33,7 +33,7 @@ function* idGenerator() {
 
 export interface Urls {
   entrypoint: string
-  categories: string
+  planList: string
 }
 
 export default class Scraper {
@@ -86,9 +86,7 @@ export default class Scraper {
 
   private async scrapePlanList(): Promise<ScrapePlanListResult> {
     const categoriesHTML = await (
-      await fetch(
-        new URL(this.urls.categories, this.urls.entrypoint).toString()
-      )
+      await fetch(new URL(this.urls.planList, this.urls.entrypoint).toString())
     ).text()
 
     const document = new JSDOM(categoriesHTML).window.document
@@ -153,7 +151,7 @@ export default class Scraper {
       (row) => row.querySelector('td:nth-child(2)')!.textContent!
     )
 
-    hours = hours.map((hour) => this.transformHours(hour))
+    hours = hours.map((hour) => transformHours(hour))
 
     let timetable: Plan['timetable'] = {
       monday: [[null]],
@@ -240,9 +238,9 @@ export default class Scraper {
       hours
     } as Plan // i hate this
   }
+}
 
-  // given a string like " 9:00- 10:15" return "9:00 - 10:15"
-  private transformHours(hour: string): string {
-    return hour.replaceAll(' ', '').replace('-', ' - ')
-  }
+/** Given a string like " 9:00- 10:15" return "9:00 - 10:15". */
+export function transformHours(hour: string): string {
+  return hour.replaceAll(' ', '').replace('-', ' - ')
 }
