@@ -130,10 +130,19 @@ export default function WeekdaySlide({
           }
         return {
           centerLeft: lessonIsClassLesson(lesson)
-            ? { text: lesson.teacher.shortName, planId: lesson.teacher.planId }
-            : { text: lesson.class.shortName, planId: lesson.class.planId },
+            ? {
+                text: lesson.teacher.shortName,
+                planId: lesson.teacher.planId
+              }
+            : {
+                text: lesson.class.shortName,
+                planId: lesson.class.planId
+              },
           centerRight: lessonIsClassroomLesson(lesson)
-            ? { text: lesson.teacher.longName, planId: lesson.teacher.planId }
+            ? {
+                text: lesson.teacher.longName,
+                planId: lesson.teacher.planId
+              }
             : { text: lesson.name },
           right: lessonIsClassroomLesson(lesson)
             ? { text: lesson.name }

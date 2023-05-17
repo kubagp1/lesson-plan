@@ -1,6 +1,7 @@
 import * as fs from 'fs/promises'
 import * as fsExtra from 'fs-extra'
-import Scraper from './scraper.js'
+import FullScraper, { ScrapeResult } from './scraperFull.js'
+import ClassesScraper from './scraperClasses.js'
 
 const interval = 1000 * 60 * 60 // 1 hour
 
@@ -16,13 +17,17 @@ if (process.env.ENTRYPOINT === undefined) {
 
 async function mainLoop() {
   let hasFailed = false
+  let scraperResult = null
   try {
-    let scraper = new Scraper({
-      entrypoint,
-      categories: 'lista.html'
-    })
-
-    let scraperResult = await scraper.scrape()
+    try {
+      scraperResult = await scrapeUsingFullPlan()
+    } catch (e) {
+      console.error(e)
+      console.log(
+        'Scraping using full plan failed, trying to scrape using classes plan'
+      )
+      scraperResult = await scrapeUsingClassesPlan()
+    }
 
     await fsExtra.emptyDir(outputDir)
     await fs.writeFile(
@@ -53,3 +58,22 @@ async function mainLoop() {
 }
 
 mainLoop()
+
+async function scrapeUsingFullPlan(): Promise<ScrapeResult> {
+  let scraper = new FullScraper({
+    entrypoint,
+    planList: 'lista.html'
+  })
+
+  let scraperResult = await scraper.scrape()
+  return scraperResult
+}
+async function scrapeUsingClassesPlan(): Promise<ScrapeResult> {
+  let scraper = new ClassesScraper({
+    entrypoint: 'https://zst-radom.edu.pl/plan_www/', // TODO: make this configurable
+    planList: 'lista.html'
+  })
+
+  let scraperResult = await scraper.scrape()
+  return scraperResult
+}
