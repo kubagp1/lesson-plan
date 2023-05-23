@@ -6,25 +6,35 @@ import ClassesScraper from './scraperClasses.js'
 const interval = 1000 * 60 * 60 // 1 hour
 
 if (process.env.ENTRYPOINT === undefined) {
-  console.log('Using default entrypoint: http://127.0.0.1:3000/')
-  console.log('Using default output directory: ./output/')
   var entrypoint = 'http://127.0.0.1:3000/'
+  var entrypointClasses = 'https://zst-radom.edu.pl/plan_www/' // I don't have a local copy available, and couldn't bother to make one
   var outputDir = './output/'
+
+  console.log('Using default entrypoint: ' + entrypoint)
+  console.log('Using default entrypoint for classes: ' + entrypointClasses)
+  console.log('Using default output directory: ' + outputDir)
 } else {
   var entrypoint = process.env.ENTRYPOINT
+  var entrypointClasses = process.env.ENTRYPOINT_BACKUP || 'http://0.0.0.0/'
   var outputDir = '/mnt/data/'
+
+  console.log('Using entrypoint: ' + entrypoint)
+  console.log('Using entrypoint for classes: ' + entrypointClasses)
+  console.log('Using output directory: ' + outputDir)
 }
 
 async function mainLoop() {
+  let hasFullPlanFailed = false
   let hasFailed = false
   let scraperResult = null
   try {
     try {
       scraperResult = await scrapeUsingFullPlan()
     } catch (e) {
+      hasFullPlanFailed = true
       console.error(e)
       console.log(
-        'Scraping using full plan failed, trying to scrape using classes plan'
+        'Scraping using full plan failed, trying to scrape using classes plan.'
       )
       scraperResult = await scrapeUsingClassesPlan()
     }
@@ -47,13 +57,17 @@ async function mainLoop() {
   }
 
   setTimeout(mainLoop, interval)
+
   console.log(
     `Scraping finished ${
       hasFailed ? 'UNSUCCESSFULLY' : 'successfully'
-    }. Next scraping will start at ` +
-      new Date(Date.now() + interval).toLocaleString('pl-PL', {
-        timeZone: 'Europe/Warsaw'
-      })
+    } using the ${
+      hasFullPlanFailed ? 'classes' : 'full'
+    } plan. Next scraping will start at ${new Date(
+      Date.now() + interval
+    ).toLocaleString('pl-PL', {
+      timeZone: 'Europe/Warsaw'
+    })}`
   )
 }
 
@@ -70,7 +84,7 @@ async function scrapeUsingFullPlan(): Promise<ScrapeResult> {
 }
 async function scrapeUsingClassesPlan(): Promise<ScrapeResult> {
   let scraper = new ClassesScraper({
-    entrypoint: 'https://zst-radom.edu.pl/plan_www/', // TODO: make this configurable
+    entrypoint: entrypointClasses,
     planList: 'lista.html'
   })
 
