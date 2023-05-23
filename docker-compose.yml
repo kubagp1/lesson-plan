@@ -16,6 +16,7 @@ services:
       - data:/mnt/data/:rw
     environment:
       - ENTRYPOINT=https://zst-radom.edu.pl/nauczyciele/
+      - ENTRYPOINT_BACKUP=https://zst-radom.edu.pl/plan_www/
   nginx:
     build: 
       context: ./
