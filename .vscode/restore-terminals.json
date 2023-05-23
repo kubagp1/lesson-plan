@@ -1,0 +1,33 @@
+{
+  "terminals": [
+    {
+      "splitTerminals": [
+        {
+          "name": "serve output",
+          "commands": [
+            "cd backend",
+            "python serve_output.py"
+          ]
+        }
+      ]
+    },
+    {
+      "splitTerminals": [
+        {
+          "name": "frontend",
+          "commands": [
+            "cd frontend",
+            "npx vite --host 0.0.0.0"
+          ]
+        },
+        {
+          "name": "backend",
+          "commands": [
+            "cd backend",
+            "npm run dev"
+          ]
+        }
+      ]
+    }
+  ]
+}
