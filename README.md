@@ -1,11 +1,12 @@
 # Mobile Web-Based Lesson Plan
 
-This project scrapes and processes data off the school website using node.js every hour. It has its UI built with React and MUI.
+This project scrapes and processes data off the school website (Vulkan Optivum) using node.js every hour. It has its UI built with React and MUI.
 
 The frontend of the application is a Single Page Application built with React and MUI.
 
 ## Features
 
+- Able to derive teacher and classroom plans only from classes plans
 - Click on any teacher room or class to redirect to its plan
 - Dynamic URL routing
 - Single Page Application
@@ -19,6 +20,7 @@ The frontend of the application is a Single Page Application built with React an
 
 - Built with TypeScript, React and MUI
 - Uses Vite
+- Uses Node.js v20
 - Uses Docker
 
 ## Screenshots
@@ -42,3 +44,5 @@ To run this project for development you need to:
 1. Serve website for scraping on port 3000
 2. In `backend/` run `npm start` and then `python ./serve_output.py`
 3. In `frontend/` run `npm dev`
+
+Alternatively, you can use [Restore Terminals](https://marketplace.visualstudio.com/items?itemName=EthanSK.restore-terminals) VSCode extension. (Config used for development is in this repo.)
