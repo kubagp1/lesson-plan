@@ -2,6 +2,8 @@
 
 This project scrapes and processes data off the school website (Vulkan Optivum) using node.js every hour. It has its UI built with React and MUI.
 
+This app was made with only my school ([ZST Radom](https://www.zst-radom.edu.pl/)) in mind. Some edge cases existing in other schools might not be handled. Default config for my school is included for easy deployment.
+
 The frontend of the application is a Single Page Application built with React and MUI.
 
 ## Features
