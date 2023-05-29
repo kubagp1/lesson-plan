@@ -41,7 +41,7 @@ export function HideColumnsProvider({
 function configurationReducer(configuration: Configuration, action: Action) {
   if ('restoreDefaults' in action) {
     localStorage.removeItem('hideColumns')
-    return initialConfiguration
+    return defaultConfiguration
   }
 
   const { category, column, value } = action
@@ -59,7 +59,7 @@ function configurationReducer(configuration: Configuration, action: Action) {
   return newConfiguration
 }
 
-const initialConfiguration: Configuration = getFromLocalStorage() ?? {
+const defaultConfiguration = {
   class: {
     centerLeft: true,
     centerRight: false,
@@ -76,6 +76,7 @@ const initialConfiguration: Configuration = getFromLocalStorage() ?? {
     right: false
   }
 }
+const initialConfiguration: Configuration = getFromLocalStorage() ?? defaultConfiguration
 
 export const HideColumnsContext =
   createContext<Configuration>(initialConfiguration)
