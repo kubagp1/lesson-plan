@@ -4,10 +4,13 @@ import Menu from '@mui/material/Menu'
 import MenuItem from '@mui/material/MenuItem'
 import { useState, MouseEvent, Fragment, useEffect } from 'react'
 import HideColumnsDialog from './HideColumnsDialog'
+import { DarkMode } from '@mui/icons-material'
+import DarkModeDialog from './DarkModeDialog'
 
 export default function OptionsMenu() {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
   const [hideColumnsDialogOpen, setHideColumnsDialogOpen] = useState(false)
+  const [darkModeDialogOpen, setDarkModeDialogOpen] = useState(false)
   const [tooltipOpen, setTooltipOpen] = useState(false)
 
   useEffect(() => {
@@ -45,12 +48,22 @@ export default function OptionsMenu() {
   const handleClose = () => {
     setAnchorEl(null)
   }
+
   const handleHideColumnsClick = () => {
     handleClose()
     setHideColumnsDialogOpen(true)
   }
   const handleHideColumnsDialogClose = () => {
     setHideColumnsDialogOpen(false)
+  }
+
+  const handleDarkModeClick = () => {
+    handleClose()
+    setDarkModeDialogOpen(true)
+  }
+
+  const handleDarkModeDialogClose = () => {
+    setDarkModeDialogOpen(false)
   }
 
   const open = Boolean(anchorEl)
@@ -93,10 +106,16 @@ export default function OptionsMenu() {
         <MenuItem onClick={handleHideColumnsClick}>
           Ukryj / pokaż kolumny
         </MenuItem>
+        <MenuItem onClick={handleDarkModeClick}>Ciemny motyw</MenuItem>
       </Menu>
+
       <HideColumnsDialog
         open={hideColumnsDialogOpen}
         handleClose={handleHideColumnsDialogClose}
+      />
+      <DarkModeDialog
+        open={darkModeDialogOpen}
+        handleClose={handleDarkModeDialogClose}
       />
     </Fragment>
   )

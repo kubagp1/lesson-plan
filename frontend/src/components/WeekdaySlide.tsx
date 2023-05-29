@@ -1,4 +1,4 @@
-import { Table, TableBody, TableCell, TableRow } from '@mui/material'
+import { Table, TableBody, TableCell, TableRow, useTheme } from '@mui/material'
 import { useContext, useEffect, useState } from 'react'
 import type {
   CategoryName,
@@ -105,6 +105,9 @@ export default function WeekdaySlide({
   const { setPlanId } = useContext(AppContext)
   const [currentTime, setCurrentTime] = useState(getSecondsSinceMidnight())
   const hideColumnsConfiguration = useContext(HideColumnsContext)
+  const theme = useTheme()
+
+  const highlightColor = theme.palette.mode === 'dark' ? '#333' : 'lightcyan'
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -200,7 +203,7 @@ export default function WeekdaySlide({
               <TableRow
                 key={i}
                 sx={{
-                  backgroundColor: entry.higlight ? 'lightcyan' : undefined
+                  backgroundColor: entry.higlight ? highlightColor : undefined
                 }}
               >
                 <TableCell size={cellSize} className="left">

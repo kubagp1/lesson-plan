@@ -7,6 +7,7 @@ import { Box } from '@mui/system'
 import WeekdaySlider from './WeekdaySlider'
 import OptionsMenu from './OptionsMenu'
 import { HideColumnsProvider } from './HideColumnsContext'
+import { DarkModeProvider } from './DarkModeContext'
 
 function getPlanIdFromUrl(): number | null {
   const currentUrl = window.location.pathname
@@ -47,43 +48,45 @@ export default function App() {
       }}
     >
       <HideColumnsProvider>
-        <Box
-          sx={{
-            display: 'flex',
-            flexDirection: 'column',
-            height: '100%'
-          }}
-        >
+        <DarkModeProvider>
           <Box
             sx={{
-              position: 'sticky',
-              top: 0,
-              zIndex: 1100, // z-index of AppBar
-              backgroundColor: '#fff'
+              display: 'flex',
+              flexDirection: 'column',
+              height: '100%'
             }}
           >
-            <AppBar position="static">
-              <Toolbar>
-                <Box sx={{ flexGrow: 1 }}>
-                  <PlanSelector
-                    planId={planId}
-                    setPlanId={setPlanId}
-                  ></PlanSelector>
-                </Box>
-                <OptionsMenu />
-              </Toolbar>
-            </AppBar>
-            <WeekdayTabs
+            <Box
+              sx={{
+                position: 'sticky',
+                top: 0,
+                zIndex: 1100 // z-index of AppBar
+                // backgroundColor: '#fff'
+              }}
+            >
+              <AppBar position="static">
+                <Toolbar>
+                  <Box sx={{ flexGrow: 1 }}>
+                    <PlanSelector
+                      planId={planId}
+                      setPlanId={setPlanId}
+                    ></PlanSelector>
+                  </Box>
+                  <OptionsMenu />
+                </Toolbar>
+              </AppBar>
+              <WeekdayTabs
+                weekday={weekday}
+                setWeekday={setWeekday}
+              ></WeekdayTabs>
+            </Box>
+            <WeekdaySlider
+              planId={planId}
               weekday={weekday}
               setWeekday={setWeekday}
-            ></WeekdayTabs>
+            ></WeekdaySlider>
           </Box>
-          <WeekdaySlider
-            planId={planId}
-            weekday={weekday}
-            setWeekday={setWeekday}
-          ></WeekdaySlider>
-        </Box>
+        </DarkModeProvider>
       </HideColumnsProvider>
     </AppContext.Provider>
   )
