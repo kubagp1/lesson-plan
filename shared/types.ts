@@ -6,9 +6,7 @@ export const categoryNames: CategoryName[] = ['class', 'teacher', 'classroom']
 export type Category = Entity[]
 
 export type Categories = {
-  class: {
-    [key: string]: Category
-  }
+  class: Category
   teacher: Category
   classroom: Category
 }

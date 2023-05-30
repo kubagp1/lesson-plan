@@ -9,10 +9,11 @@ import type {
   TeacherLesson,
   Weekday
 } from '../shared/types'
-import { AppContext } from './App'
+import { AppContext } from './AppContext'
 import { HideColumnsContext } from './HideColumnsContext'
 
 import './WeekdaySlide.less'
+import { getCategoryNameFromPlanId } from '../lib/categories'
 
 type WeekdaySlideProps = {
   lessons: Plan['timetable'][Weekday]
@@ -102,12 +103,15 @@ export default function WeekdaySlide({
   hours,
   isToday
 }: WeekdaySlideProps) {
-  const { setPlanId } = useContext(AppContext)
+  const { setPlanId, planId, categories } = useContext(AppContext)
   const [currentTime, setCurrentTime] = useState(getSecondsSinceMidnight())
   const hideColumnsConfiguration = useContext(HideColumnsContext)
   const theme = useTheme()
 
   const highlightColor = theme.palette.mode === 'dark' ? '#333' : 'lightcyan'
+
+  if (categories.data === undefined) return null
+  if (planId === null) return null
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -164,28 +168,10 @@ export default function WeekdaySlide({
     }
   })
 
-  // Default value, if below loop can't determine the category, then we might as well use the default value because that means there are no lessons
-  let category: CategoryName = 'class'
-
-  // Can't use find because of https://github.com/microsoft/TypeScript/issues/44373
-  // Won't use AppContext because I'm scared of the consequences
-  for (let lessonGroup of lessons) {
-    for (let lesson of lessonGroup) {
-      if (lesson === null) continue
-      if (lessonIsClassroomLesson(lesson)) {
-        category = 'classroom'
-        break
-      }
-      if (lessonIsClassLesson(lesson)) {
-        category = 'class'
-        break
-      }
-      if (lessonIsTeacherLesson(lesson)) {
-        category = 'teacher'
-        break
-      }
-    }
-  }
+  let category: CategoryName = getCategoryNameFromPlanId(
+    categories.data,
+    planId
+  )
 
   const hideCenterLeft = hideColumnsConfiguration[category].centerLeft
   const hideCenterRight = hideColumnsConfiguration[category].centerRight

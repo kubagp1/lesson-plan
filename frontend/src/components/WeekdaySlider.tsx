@@ -1,36 +1,26 @@
-import { useEffect, useState } from 'react'
+import { useContext, useEffect, useState } from 'react'
 
 import { Plan, Weekday, weekdays } from '../shared/types'
 import WeekdaySlide from './WeekdaySlide'
 import apiCalls from '../apiCalls'
 import EmblaCarousel from './EmblaCarousel'
 import { Box, CircularProgress } from '@mui/material'
+import { AppContext } from './AppContext'
 
 interface WeekdayViewsProps {
-  planId: number | null
   weekday: Weekday
   setWeekday: (weekday: Weekday) => void
 }
 
 export default function WeekdayViews({
-  planId,
   weekday,
   setWeekday
 }: WeekdayViewsProps) {
-  const [isLoaded, setIsLoaded] = useState(false)
-  const [plan, setPlan] = useState<Plan | null>(null)
+  const {plan: planQuery} = useContext(AppContext)
 
-  useEffect(() => {
-    if (planId === null) return
-    setIsLoaded(false)
-    apiCalls.getPlan(planId).then((plan) => {
-      if (plan.id !== planId) return
-      setPlan(plan)
-      setIsLoaded(true)
-    })
-  }, [planId])
+  const {data: plan, isLoading, isError} = planQuery
 
-  if (!isLoaded)
+  if (isLoading)
     return (
       <Box
         sx={{ display: 'flex', justifyContent: 'center', paddingTop: '16px' }}
@@ -38,6 +28,8 @@ export default function WeekdayViews({
         <CircularProgress />
       </Box>
     )
+  
+  if (isError) return <div>Error</div> // TODO: Better error
 
   type WeekdayLessonDict = { [K in Weekday]: Plan['timetable'][Weekday] }
   // for readability

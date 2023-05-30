@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useContext } from 'react'
 
 import {
   Box,
@@ -9,223 +9,75 @@ import {
   ThemeProvider
 } from '@mui/material'
 
-import apiCalls from '../apiCalls'
-import { Categories, CategoryName } from '../shared/types'
+import { AppContext } from './AppContext'
+import {
+  getCategoryNameFromPlanId,
+  getClassesByGrades,
+  getEntityByPlanId,
+  getGrade
+} from '../lib/categories'
+import { CategoryName } from '../shared/types'
+import {
+  getSavedSessionPlanIdOrDefaultForCategory,
+  updateSavedSessionHelper
+} from '../lib/savedSession'
 
-type SavedSession = {
-  categoryName?: CategoryName
-  grade?: string
-  classShortName?: string
-  classroomShortName?: string
-  teacherLongName?: string
-}
+export default function PlanSelector() {
+  const { categories, planId, setPlanId } = useContext(AppContext)
 
-function getSavedSession(): SavedSession {
-  const savedSessionJSON = localStorage.getItem('session')
-  if (savedSessionJSON) {
-    return JSON.parse(savedSessionJSON)
-  } else return {}
-}
+  if (categories.data === undefined) return null // TODO loading indicator
+  if (planId === null) return null
 
-function updateSavedSession(session: SavedSession) {
-  localStorage.setItem(
-    'session',
-    JSON.stringify({ ...getSavedSession(), ...session })
+  const selectedCategoryName = getCategoryNameFromPlanId(
+    categories.data,
+    planId
   )
-}
 
-function getSavedSessionPlanIdOrDefault(
-  categories: Categories,
-  categoryName: CategoryName
-): number {
-  let session = getSavedSession()
+  const handleCategoryNameChange = (e: SelectChangeEvent<CategoryName>) => {
+    if (categories.data === undefined) return
 
-  let planId: number
-  if (categoryName === 'class') {
-    let defaultPlanId =
-      categories.class[Object.keys(categories.class)[0]][0].planId
-    if (!session.classShortName) planId = defaultPlanId
-    else {
-      let plansToSearch = Object.values(categories.class).flat()
-      planId =
-        plansToSearch.find((p) => p.shortName === session.classShortName!)
-          ?.planId || defaultPlanId
-    }
-  } else if (categoryName === 'teacher') {
-    let defaultPlanId = categories.teacher[0].planId
-    if (!session.teacherLongName) planId = defaultPlanId
-    else {
-      let plansToSearch = categories.teacher
-      planId =
-        plansToSearch.find((p) => p.longName === session.teacherLongName!)
-          ?.planId || defaultPlanId
-    }
-  } else if (categoryName === 'classroom') {
-    let defaultPlanId = categories.classroom[0].planId
-    if (!session.classroomShortName) planId = defaultPlanId
-    else {
-      let plansToSearch = categories.classroom
-      planId =
-        plansToSearch.find((p) => p.shortName === session.classroomShortName!)
-          ?.planId || defaultPlanId
-    }
-  }
-
-  return planId!
-}
-
-interface PlanSelectorProps {
-  planId: number | null
-  setPlanId: (planId: number | null) => void
-}
-
-export default function PlanSelector({ planId, setPlanId }: PlanSelectorProps) {
-  const [categories, setCategories] = useState<Categories | null>(null)
-  const [fetchingError, setFetchingError] = useState<string | null>(null)
-  const [selectedCategoryName, setSelectedCategoryName] =
-    useState<CategoryName | null>(null)
-  const [selectedGrade, setSelectedGrade] = useState<string | null>(null)
-
-  useEffect(() => {
-    apiCalls
-      .getCategories()
-      .then((fetchedCategories) => {
-        setCategories(fetchedCategories)
-      })
-      .catch((err) => {
-        setFetchingError(err.message)
-      })
-  }, [])
-
-  useEffect(() => {
-    if (!categories) return
-
-    let failedToGetFromPlanId = false
-    try {
-      if (planId === null) throw new Error('No planId in url')
-
-      let categoryName: CategoryName
-      let grade: string | undefined
-      if (categories.classroom.find((p) => p.planId === planId)) {
-        categoryName = 'classroom'
-      } else if (categories.teacher.find((p) => p.planId === planId)) {
-        categoryName = 'teacher'
-      } else {
-        categoryName = 'class'
-        grade = Object.keys(categories.class).find(
-          (g) =>
-            categories.class[g].find((p) => p.planId === planId) !== undefined
-        )!
-        if (grade === undefined) throw new Error('No grade found')
-      }
-      setSelectedCategoryName(categoryName)
-      if (categoryName === 'class') {
-        setSelectedGrade(grade!)
-      } // Don't change grade when it's not needed
-    } catch (error) {
-      failedToGetFromPlanId = true
-    }
-
-    if (failedToGetFromPlanId) {
-      let session = getSavedSession()
-
-      let categoryName: CategoryName
-      if (
-        session.categoryName &&
-        categories.hasOwnProperty(session.categoryName)
-      ) {
-        categoryName = session.categoryName
-      } else {
-        categoryName = 'class'
-      }
-
-      let grade: string
-      if (session.grade && categories.class.hasOwnProperty(session.grade)) {
-        grade = session.grade
-      } else {
-        grade = Object.keys(categories.class)[0]
-      }
-
-      let planId = getSavedSessionPlanIdOrDefault(categories, categoryName)
-
-      setSelectedCategoryName(categoryName)
-      setSelectedGrade(grade)
-      setPlanId(planId!)
-    }
-  }, [planId, categories])
-
-  // setting document title
-  useEffect(() => {
-    if (categories === null || planId === null) return
-
-    let flatCategories = [
-      ...categories.teacher,
-      ...categories.classroom,
-      ...Object.values(categories.class).flat()
-    ]
-
-    console.log({ flatCategories, planId })
-
-    let planName =
-      flatCategories.find((p) => p.planId === planId)?.longName ?? 'default'
-
-    document.title = `${planName} - Plan lekcji`
-  }, [categories, planId])
-
-  if (categories === null || selectedCategoryName === null || planId === null) {
-    return <span>{fetchingError || 'Ładowanie...'}</span>
-  }
-
-  const handleCategoryNameChange = (e: SelectChangeEvent) => {
-    const newCategoryName = e.target.value as CategoryName
-
-    // setSelectedCategoryName(newCategoryName)
-    setPlanId(getSavedSessionPlanIdOrDefault(categories, newCategoryName))
-
-    updateSavedSession({ categoryName: newCategoryName })
-  }
-
-  const handleGradeChange = (e: SelectChangeEvent) => {
-    const newGrade = e.target.value as string
-
-    setSelectedGrade(newGrade)
-    setPlanId(categories.class[newGrade][0].planId)
-    // I think always setting the first plan of the grade makes ux more consistent
-    // (otherwise it would depend on whether the user switched to a different plan in previous grade)
-
-    updateSavedSession({ grade: newGrade })
-    // I think updating classShortName is not necessary here,
-    // it doesn't really change the behavior of the app
-  }
-
-  const handlePlanIdChange = (e: SelectChangeEvent) => {
-    const newPlanId = Number(e.target.value)
-
+    const newcategoryName = e.target.value as CategoryName
+    const newPlanId = getSavedSessionPlanIdOrDefaultForCategory(
+      categories.data!,
+      newcategoryName
+    )
     setPlanId(newPlanId)
 
-    switch (selectedCategoryName) {
-      case 'class':
-        updateSavedSession({
-          classShortName: categories.class[selectedGrade!].find(
-            (p) => p.planId === newPlanId
-          )?.shortName
-        })
-        break
-      case 'teacher':
-        updateSavedSession({
-          teacherLongName: categories.teacher.find(
-            (p) => p.planId === newPlanId
-          )?.longName
-        })
-        break
-      case 'classroom':
-        updateSavedSession({
-          classroomShortName: categories.classroom.find(
-            (p) => p.planId === newPlanId
-          )?.shortName
-        })
-        break
-    }
+    updateSavedSessionHelper(
+      newcategoryName,
+      getEntityByPlanId(categories.data, newPlanId)
+    )
+  }
+
+  const classByGrade = getClassesByGrades(categories.data.class)
+
+  const selectedGrade = getGrade(
+    getEntityByPlanId(categories.data, planId).longName
+  )
+
+  const handleGradeChange = (e: SelectChangeEvent<string>) => {
+    if (categories.data === undefined) return
+
+    const grade = e.target.value
+    const newPlanId = classByGrade[grade][0].planId
+    setPlanId(newPlanId)
+
+    updateSavedSessionHelper(
+      getCategoryNameFromPlanId(categories.data, newPlanId),
+      getEntityByPlanId(categories.data, newPlanId)
+    )
+  }
+
+  const handlePlanIdChange = (e: SelectChangeEvent<string>) => {
+    if (categories.data === undefined) return
+
+    const newPlanId = parseInt(e.target.value)
+    setPlanId(newPlanId)
+
+    updateSavedSessionHelper(
+      getCategoryNameFromPlanId(categories.data, newPlanId),
+      getEntityByPlanId(categories.data, newPlanId)
+    )
   }
 
   let selects = []
@@ -251,7 +103,7 @@ export default function PlanSelector({ planId, setPlanId }: PlanSelectorProps) {
         value={selectedGrade!}
         onChange={handleGradeChange}
       >
-        {Object.keys(categories.class).map((grade) => (
+        {Object.keys(classByGrade).map((grade) => (
           <MenuItem value={grade} key={grade}>
             {grade}
           </MenuItem>
@@ -259,9 +111,9 @@ export default function PlanSelector({ planId, setPlanId }: PlanSelectorProps) {
       </Select>
     )
 
-    var availablePlans = categories.class[selectedGrade!]
+    var availablePlans = classByGrade[selectedGrade]
   } else {
-    var availablePlans = categories[selectedCategoryName]
+    var availablePlans = categories.data[selectedCategoryName]
   }
 
   selects.push(

@@ -32,13 +32,11 @@ export default class Scraper {
     let classPlans = await this.scrapeClassPlans(planList)
 
     let categories = {
-      class: {
-        '1337': Object.entries(classPlans).map(([name, plan]) => ({
-          planId: plan.id,
-          shortName: name,
-          longName: name
-        }))
-      },
+      class: Object.entries(classPlans).map(([name, plan]) => ({
+        planId: plan.id,
+        shortName: name,
+        longName: name
+      })),
       teacher: Object.entries(this.teacherPlansByShortName).map(
         ([name, plan]) => ({
           planId: plan.id,
@@ -64,16 +62,18 @@ export default class Scraper {
       this.classroomPlansByShortName
     )
 
-    let plansByShortNames: { [key: string]: Plan } = {
-      ...classPlans,
-      ...this.teacherPlansByShortName,
-      ...this.classroomPlansByShortName
-    }
-
     // i need to use ids instead of names as keys
+    // for future me: you can't use the spread operator because it will overwrite the keys with the same name
+    // that was the case with the teacher and classroom plans
     let plans: { [key: number]: Plan } = {}
-    for (let [name, plan] of Object.entries(plansByShortNames)) {
-      plans[plan.id] = plan
+    for (const category of [
+      classPlans,
+      this.teacherPlansByShortName,
+      this.classroomPlansByShortName
+    ]) {
+      for (let [name, plan] of Object.entries(category)) {
+        plans[plan.id] = plan
+      }
     }
 
     return {
