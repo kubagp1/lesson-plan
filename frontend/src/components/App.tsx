@@ -8,86 +8,52 @@ import WeekdaySlider from './WeekdaySlider'
 import OptionsMenu from './OptionsMenu'
 import { HideColumnsProvider } from './HideColumnsContext'
 import { DarkModeProvider } from './DarkModeContext'
+import { AppContextProvider } from './AppContext'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 
-function getPlanIdFromUrl(): number | null {
-  const currentUrl = window.location.pathname
-
-  const regex = /^\/plan\/(\d+)/
-
-  const match = regex.exec(currentUrl)?.[1]
-  return match === undefined ? null : parseInt(match)
-}
-
-export const AppContext = createContext({
-  setPlanId: (planId: number | null): void => {}
-})
+const queryClient = new QueryClient()
 
 export default function App() {
-  const [planId, setPlanId] = useState<number | null>(getPlanIdFromUrl())
   const [weekday, setWeekday] = useState<Weekday>(getCurrentWeekday())
 
-  useEffect(() => {
-    const popstateHandler = () => {
-      setPlanId(getPlanIdFromUrl())
-    }
-    window.addEventListener('popstate', popstateHandler)
-    return () => window.removeEventListener('popstate', popstateHandler)
-  }, [])
-
-  useEffect(() => {
-    if (planId === null) return
-    if (planId === getPlanIdFromUrl()) return
-
-    history.pushState(null, '', `/plan/${planId}`)
-  }, [planId])
-
   return (
-    <AppContext.Provider
-      value={{
-        setPlanId
-      }}
-    >
-      <HideColumnsProvider>
-        <DarkModeProvider>
-          <Box
-            sx={{
-              display: 'flex',
-              flexDirection: 'column',
-              height: '100%'
-            }}
-          >
+    <QueryClientProvider client={queryClient}>
+      <AppContextProvider>
+        <HideColumnsProvider>
+          <DarkModeProvider>
             <Box
               sx={{
-                position: 'sticky',
-                top: 0,
-                zIndex: 1100 // z-index of AppBar
-                // backgroundColor: '#fff'
+                display: 'flex',
+                flexDirection: 'column',
+                height: '100%'
               }}
             >
-              <AppBar position="static">
-                <Toolbar>
-                  <Box sx={{ flexGrow: 1 }}>
-                    <PlanSelector
-                      planId={planId}
-                      setPlanId={setPlanId}
-                    ></PlanSelector>
-                  </Box>
-                  <OptionsMenu />
-                </Toolbar>
-              </AppBar>
-              <WeekdayTabs
-                weekday={weekday}
-                setWeekday={setWeekday}
-              ></WeekdayTabs>
+              <Box
+                sx={{
+                  position: 'sticky',
+                  top: 0,
+                  zIndex: 1100 // z-index of AppBar
+                  // backgroundColor: '#fff'
+                }}
+              >
+                <AppBar position="static">
+                  <Toolbar>
+                    <Box sx={{ flexGrow: 1 }}>
+                      <PlanSelector />
+                    </Box>
+                    <OptionsMenu />
+                  </Toolbar>
+                </AppBar>
+                <WeekdayTabs
+                  weekday={weekday}
+                  setWeekday={setWeekday}
+                ></WeekdayTabs>
+              </Box>
+              <WeekdaySlider weekday={weekday} setWeekday={setWeekday} />
             </Box>
-            <WeekdaySlider
-              planId={planId}
-              weekday={weekday}
-              setWeekday={setWeekday}
-            ></WeekdaySlider>
-          </Box>
-        </DarkModeProvider>
-      </HideColumnsProvider>
-    </AppContext.Provider>
+          </DarkModeProvider>
+        </HideColumnsProvider>
+      </AppContextProvider>
+    </QueryClientProvider>
   )
 }

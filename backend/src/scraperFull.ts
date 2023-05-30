@@ -59,7 +59,7 @@ export default class Scraper {
   }
   private planListToCategories(planList: ScrapePlanListResult): Categories {
     let categories: Categories = {
-      class: {},
+      class: [],
       teacher: [],
       classroom: []
     }
@@ -71,14 +71,7 @@ export default class Scraper {
         longName: plan.name
       }
 
-      if (plan.type == 'class') {
-        // get first number from plan.name
-        const classNumber = plan.name.match(/\d+/)![0]
-        if (!categories.class[classNumber]) {
-          categories.class[classNumber] = []
-        }
-        categories.class[classNumber].push(category)
-      } else categories[plan.type].push(category)
+      categories[plan.type].push(category)
     }
 
     return categories
