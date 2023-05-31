@@ -16,9 +16,9 @@ export default function WeekdayViews({
   weekday,
   setWeekday
 }: WeekdayViewsProps) {
-  const {plan: planQuery} = useContext(AppContext)
+  const { plan: planQuery } = useContext(AppContext)
 
-  const {data: plan, isLoading, isError} = planQuery
+  const { data: plan, isLoading, isError } = planQuery
 
   if (isLoading)
     return (
@@ -28,7 +28,7 @@ export default function WeekdayViews({
         <CircularProgress />
       </Box>
     )
-  
+
   if (isError) return <div>Error</div> // TODO: Better error
 
   type WeekdayLessonDict = { [K in Weekday]: Plan['timetable'][Weekday] }
