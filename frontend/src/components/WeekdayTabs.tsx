@@ -20,7 +20,11 @@ export default function WeekdayTabs({ weekday, setWeekday }: WeekdayTabsProps) {
   return (
     <Tabs
       variant="fullWidth"
-      sx={{ borderBottom: 1, borderColor: 'divider' }}
+      sx={{
+        borderBottom: 1,
+        borderColor: 'divider',
+        backgroundColor: 'background.paper'
+      }}
       value={weekday}
     >
       {weekdays.map((weekday) => (
