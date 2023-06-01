@@ -1,10 +1,5 @@
 import { JSDOM } from 'jsdom'
-import {
-  ScrapeResult,
-  Urls,
-  idGenerator,
-  transformHours
-} from './scraperFull.js'
+import { ScrapeResult, Urls, idGenerator } from './scraperFull.js'
 import {
   ClassPlan,
   ClassroomPlan,
@@ -12,6 +7,7 @@ import {
   TeacherPlan,
   weekdays
 } from './shared/types.js'
+import { applyTransformations } from './transformations.js'
 
 type ScrapePlanListResult = {
   url: string
@@ -34,7 +30,7 @@ export default class Scraper {
     let categories = {
       class: Object.entries(classPlans).map(([name, plan]) => ({
         planId: plan.id,
-        shortName: name,
+        shortName: classLongNameToShortName(name),
         longName: name
       })),
       teacher: Object.entries(this.teacherPlansByShortName).map(
@@ -76,10 +72,10 @@ export default class Scraper {
       }
     }
 
-    return {
+    return applyTransformations({
       categories,
       plans
-    }
+    })
   }
 
   private fillEmptyEntries<
@@ -133,8 +129,6 @@ export default class Scraper {
       (row) =>
         row.querySelector('td:nth-child(2)')?.textContent ?? 'missing hour'
     )
-
-    hours = hours.map((hour) => transformHours(hour))
 
     let timetable: ClassPlan['timetable'] = {
       monday: [[null]],
@@ -243,7 +237,7 @@ export default class Scraper {
                     class: {
                       planId: planId,
                       longName: plan.name,
-                      shortName: plan.name // TODO: get short name
+                      shortName: classLongNameToShortName(plan.name)
                     },
                     classroom: {
                       planId: this.classroomPlansByShortName[roomShortName].id,
@@ -251,8 +245,6 @@ export default class Scraper {
                       shortName: roomShortName
                     }
                   })
-
-                  // TODO: override hour
                 }
 
                 if (roomShortName in this.classroomPlansByShortName) {
@@ -288,7 +280,7 @@ export default class Scraper {
                     class: {
                       planId: planId,
                       longName: plan.name,
-                      shortName: plan.name // TODO: get short name
+                      shortName: classLongNameToShortName(plan.name)
                     },
                     teacher: {
                       planId: this.teacherPlansByShortName[teacherShortName].id,
@@ -348,4 +340,8 @@ export default class Scraper {
 
     return planList
   }
+}
+
+function classLongNameToShortName(longName: string): string {
+  return longName.split(' ')[0]
 }
