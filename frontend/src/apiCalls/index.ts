@@ -26,8 +26,6 @@ const entrypoint = import.meta.env.PROD
   ? location.origin + '/data/'
   : generateDevEntrypoint(5000)
 
-console.log({ entrypoint, env: import.meta.env })
-
 const fetchData = async (endpoint: string) => {
   const response = await fetch(entrypoint + endpoint)
   if (!response.ok) {
