@@ -9,6 +9,7 @@ import {
   weekdays,
   Teacher
 } from './shared/types.js'
+import { applyTransformations } from './transformations.js'
 
 export type ScrapeResult = {
   categories: Categories
@@ -52,10 +53,10 @@ export default class Scraper {
 
     console.log(`Scraped ${Object.keys(plans).length} plans`)
 
-    return {
+    return applyTransformations({
       categories,
       plans
-    }
+    })
   }
   private planListToCategories(planList: ScrapePlanListResult): Categories {
     let categories: Categories = {
@@ -144,8 +145,6 @@ export default class Scraper {
       (row) => row.querySelector('td:nth-child(2)')!.textContent!
     )
 
-    hours = hours.map((hour) => transformHours(hour))
-
     let timetable: Plan['timetable'] = {
       monday: [[null]],
       tuesday: [[null]],
@@ -190,7 +189,7 @@ export default class Scraper {
                   name: span.textContent!,
                   teacher: entityFactory(
                     span.parentElement!.querySelector<HTMLAnchorElement>('.n')!
-                  ) as Teacher,
+                  ),
                   classroom: entityFactory(
                     span.parentElement!.querySelector<HTMLAnchorElement>('.s')!
                   )
@@ -231,9 +230,4 @@ export default class Scraper {
       hours
     } as Plan // i hate this
   }
-}
-
-/** Given a string like " 9:00- 10:15" return "9:00 - 10:15". */
-export function transformHours(hour: string): string {
-  return hour.replaceAll(' ', '').replace('-', ' - ')
 }

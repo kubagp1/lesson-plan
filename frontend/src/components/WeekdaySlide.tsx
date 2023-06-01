@@ -1,19 +1,15 @@
 import { Table, TableBody, TableCell, TableRow, useTheme } from '@mui/material'
 import { useContext, useEffect, useState } from 'react'
-import type {
-  CategoryName,
-  ClassLesson,
-  ClassroomLesson,
-  Lesson,
-  Plan,
-  TeacherLesson,
-  Weekday
-} from '../shared/types'
+import type { CategoryName, Plan, Weekday } from '../shared/types'
 import { AppContext } from './AppContext'
 import { HideColumnsContext } from './HideColumnsContext'
 
 import './WeekdaySlide.less'
 import { getCategoryNameFromPlanId } from '../lib/categories'
+import {
+  lessonIsClassLesson,
+  lessonIsClassroomLesson
+} from '../shared/lessonIsXLesson'
 
 type WeekdaySlideProps = {
   lessons: Plan['timetable'][Weekday]
@@ -32,18 +28,6 @@ type Entry = {
 }
 
 type Entries = Entry[]
-
-const lessonIsClassroomLesson = (lesson: Lesson): lesson is ClassroomLesson => {
-  return (lesson as ClassLesson | TeacherLesson).classroom === undefined
-}
-
-const lessonIsClassLesson = (lesson: Lesson): lesson is ClassLesson => {
-  return (lesson as ClassroomLesson | TeacherLesson).class === undefined
-}
-
-const lessonIsTeacherLesson = (lesson: Lesson): lesson is TeacherLesson => {
-  return (lesson as ClassroomLesson | ClassLesson).teacher === undefined
-}
 
 function hourToMinutes(hour: string): number {
   const [h, m] = hour.split(':').map((s) => parseInt(s))
