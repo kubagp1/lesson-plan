@@ -1,16 +1,11 @@
 import { createContext, useEffect, useState } from 'react'
 import { Categories, Plan } from '../shared/types'
-import {
-  QueryClient,
-  QueryClientProvider,
-  UseQueryResult,
-  useQuery,
-  useQueryClient
-} from '@tanstack/react-query'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { getCategories, getPlan } from '../apiCalls'
 import { flattenCategories } from '../lib/categories'
 import { getPlanIdFromUrl } from '../lib/getPlanIdFromUrl'
 import { getSavedSessionPlanIdOrDefault } from '../lib/savedSession'
+import { getEntityByPlanId } from '../lib/categories'
 
 type Query<T> = {
   data: T | undefined
@@ -77,12 +72,17 @@ export function AppContextProvider({
     if (planId === null) return
     if (planId === getPlanIdFromUrl()) return
 
+    let newUrl = `/plan/${planId}`
+    if (categories.data !== undefined) {
+      newUrl += `-${getEntityByPlanId(categories.data, planId).shortName}`
+    }
+
     if (getPlanIdFromUrl() === null) {
-      history.replaceState(null, '', `/plan/${planId}`)
+      history.replaceState(null, '', newUrl)
       return
     }
 
-    history.pushState(null, '', `/plan/${planId}`)
+    history.pushState(null, '', newUrl)
   }, [planId])
 
   // update document.title when planId changes
