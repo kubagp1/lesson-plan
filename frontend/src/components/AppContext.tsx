@@ -63,7 +63,7 @@ export function AppContextProvider({
     setPlanId(getInitialPlanId(categories.data))
   }, [categories.data !== undefined])
 
-  // listen to url changes
+  // listen to url changes (pressing back/forward buttons)
   useEffect(() => {
     const popstateHandler = () => {
       setPlanId(getPlanIdFromUrl())
@@ -77,6 +77,11 @@ export function AppContextProvider({
     if (planId === null) return
     if (planId === getPlanIdFromUrl()) return
 
+    if (getPlanIdFromUrl() === null) {
+      history.replaceState(null, '', `/plan/${planId}`)
+      return
+    }
+
     history.pushState(null, '', `/plan/${planId}`)
   }, [planId])
 
@@ -87,7 +92,7 @@ export function AppContextProvider({
 
     const flatCategories = flattenCategories(categories.data)
     const plan = flatCategories.find((p) => p.planId === planId)
-    
+
     document.title = `${plan?.longName} - Plan lekcji`
   }, [planId, categories.data])
 
@@ -111,6 +116,6 @@ function getInitialPlanId(categories: Categories): number {
   const fromUrl = getPlanIdFromUrl()
   if (fromUrl !== null && flatCategories.find((p) => p.planId === fromUrl))
     return fromUrl
-  
+
   return getSavedSessionPlanIdOrDefault(categories)
 }
