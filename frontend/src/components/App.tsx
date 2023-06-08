@@ -10,6 +10,7 @@ import { HideColumnsProvider } from './HideColumnsContext'
 import { DarkModeProvider } from './DarkModeContext'
 import { AppContextProvider } from './AppContext'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import StalePlanWarningDialog from './StalePlanWarningDialog'
 
 const queryClient = new QueryClient()
 
@@ -51,6 +52,7 @@ export default function App() {
               </Box>
               <WeekdaySlider weekday={weekday} setWeekday={setWeekday} />
             </Box>
+            <StalePlanWarningDialog />
           </DarkModeProvider>
         </HideColumnsProvider>
       </AppContextProvider>

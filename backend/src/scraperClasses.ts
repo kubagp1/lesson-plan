@@ -1,11 +1,5 @@
 import { JSDOM } from 'jsdom'
-import {
-  ScrapeResult,
-  Urls,
-  getGroup,
-  idGenerator,
-  isAdvanced
-} from './scraperFull.js'
+import { ScrapeResult, Urls, idGenerator } from './scraperFull.js'
 import {
   ClassPlan,
   ClassroomPlan,
@@ -14,6 +8,12 @@ import {
   weekdays
 } from './shared/types.js'
 import { applyTransformations } from './transformations.js'
+import {
+  classLongNameToShortName,
+  getGroup,
+  getMetadata,
+  isAdvanced
+} from './utils.js'
 
 type ScrapePlanListResult = {
   url: string
@@ -120,9 +120,8 @@ export default class Scraper {
 
     let planId = this.idGenerator.next().value
 
-    let planHTML = await (
-      await fetch(new URL(url, this.urls.entrypoint).toString())
-    ).text()
+    const absoluteUrl = new URL(url, this.urls.entrypoint).toString()
+    let planHTML = await (await fetch(absoluteUrl)).text()
 
     let document = new JSDOM(planHTML).window.document
 
@@ -186,7 +185,8 @@ export default class Scraper {
                       friday: []
                     },
                     hours: [],
-                    id: this.idGenerator.next().value
+                    id: this.idGenerator.next().value,
+                    metadata: getMetadata(document, absoluteUrl, 'classes')
                   }
                 }
 
@@ -201,7 +201,8 @@ export default class Scraper {
                       friday: []
                     },
                     hours: [],
-                    id: this.idGenerator.next().value
+                    id: this.idGenerator.next().value,
+                    metadata: getMetadata(document, absoluteUrl, 'classes')
                   }
                 }
 
@@ -331,7 +332,8 @@ export default class Scraper {
     return {
       timetable: timetable,
       hours: hours,
-      id: planId
+      id: planId,
+      metadata: getMetadata(document, absoluteUrl, 'classes')
     }
   }
 
@@ -358,8 +360,4 @@ export default class Scraper {
 
     return planList
   }
-}
-
-function classLongNameToShortName(longName: string): string {
-  return longName.split(' ')[0]
 }
