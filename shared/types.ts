@@ -37,6 +37,11 @@ export type Class = Entity
 
 // PLAN
 
+export type Chips = {
+  group: string | null
+  advanced: boolean
+}
+
 export type Plan = ClassPlan | TeacherPlan | ClassroomPlan
 export type Lesson = ClassLesson | TeacherLesson | ClassroomLesson
 
@@ -44,6 +49,7 @@ export type ClassLesson = {
   name: string
   classroom: Classroom
   teacher: Teacher
+  chips: Chips
 }
 
 export type ClassPlan = {
@@ -58,6 +64,7 @@ export type TeacherLesson = {
   name: string
   classroom: Classroom
   class: Class
+  chips: Chips
 }
 
 export type TeacherPlan = {
@@ -72,6 +79,7 @@ export type ClassroomLesson = {
   name: string
   teacher: Teacher
   class: Class
+  chips: Chips
 }
 
 export type ClassroomPlan = {
