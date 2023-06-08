@@ -51,6 +51,11 @@ export default function PlanInfoDialog(props: Props) {
         <Typography>
           {formatDateTimeScraped(plan.data.metadata.scrapedAt)}
         </Typography>
+
+        <Typography variant="h6">Typ skrobacza</Typography>
+        <Typography>
+          {plan.data.metadata.scrapedUsing == 'full' ? 'Pełny' : 'Tylko klasy'}
+        </Typography>
       </DialogContent>
       <DialogActions>
         <Button onClick={handleClose}>Zamknij</Button>
