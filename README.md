@@ -8,6 +8,7 @@ The frontend of the application is a Single Page Application built with React an
 
 ## Features
 
+- Chips for groups and advanced classes
 - Dark mode
 - Show metadata about a plan
 - Searchable categories
