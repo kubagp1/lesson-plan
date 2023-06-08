@@ -1,3 +1,5 @@
+// types are broken here, but this is not used so whatever, check out scraperClasses.ts for some better code
+
 import fetch from 'node-fetch'
 import { JSDOM } from 'jsdom'
 
@@ -7,7 +9,8 @@ import {
   Entity,
   Plan,
   weekdays,
-  Teacher
+  Teacher,
+  Weekday
 } from './shared/types.js'
 import { applyTransformations } from './transformations.js'
 
@@ -22,10 +25,10 @@ type ScrapePlanListResult = {
   type: CategoryName
   url: string
   name: string
-  id: any
+  id: number
 }[]
 
-export function* idGenerator(): Generator<number> {
+export function* idGenerator(): Generator<number, never, never> {
   let id = 0
   while (true) {
     yield id++
@@ -38,7 +41,7 @@ export interface Urls {
 }
 
 export default class Scraper {
-  private idGenerator: Generator<number>
+  private idGenerator: Generator<number, never, never>
   private entityCache: { [key: string]: Entity } = {}
 
   constructor(private readonly urls: Urls) {
@@ -182,46 +185,51 @@ export default class Scraper {
             return entity
           }
 
-          switch (plan.type) {
-            case 'class':
-              return Array.from(entriesSpans).map((span) => {
-                return {
-                  name: span.textContent!,
-                  teacher: entityFactory(
-                    span.parentElement!.querySelector<HTMLAnchorElement>('.n')!
-                  ),
-                  classroom: entityFactory(
-                    span.parentElement!.querySelector<HTMLAnchorElement>('.s')!
-                  )
-                }
-              })
-            case 'teacher':
-              return Array.from(entriesSpans).map((span) => {
-                return {
-                  name: span.textContent!,
-                  class: entityFactory(
-                    span.parentElement!.querySelector<HTMLAnchorElement>('.o')!
-                  ),
-                  classroom: entityFactory(
-                    span.parentElement!.querySelector<HTMLAnchorElement>('.s')!
-                  )
-                }
-              })
-            case 'classroom':
-              return Array.from(entriesSpans).map((span) => {
-                return {
-                  name: span.textContent!,
-                  teacher: entityFactory(
-                    span.parentElement!.querySelector<HTMLAnchorElement>('.n')!
-                  ),
-                  class: entityFactory(
-                    span.parentElement!.querySelector<HTMLAnchorElement>('.o')!
-                  )
-                }
-              })
+          if (plan.type === 'class') {
+            return Array.from(entriesSpans).map((span) => ({
+              name: span.textContent!,
+              teacher: entityFactory(
+                span.parentElement!.querySelector<HTMLAnchorElement>('.n')!
+              ),
+              classroom: entityFactory(
+                span.parentElement!.querySelector<HTMLAnchorElement>('.s')!
+              ),
+              chips: {
+                group: getGroup(span.textContent!),
+                advanced: isAdvanced(span.textContent!)
+              }
+            }))
+          } else if (plan.type === 'teacher') {
+            return Array.from(entriesSpans).map((span) => ({
+              name: span.textContent!,
+              class: entityFactory(
+                span.parentElement!.querySelector<HTMLAnchorElement>('.o')!
+              ),
+              classroom: entityFactory(
+                span.parentElement!.querySelector<HTMLAnchorElement>('.s')!
+              ),
+              chips: {
+                group: getGroup(span.textContent!),
+                advanced: isAdvanced(span.textContent!)
+              }
+            }))
+          } else if (plan.type === 'classroom') {
+            return Array.from(entriesSpans).map((span) => ({
+              name: span.textContent!,
+              teacher: entityFactory(
+                span.parentElement!.querySelector<HTMLAnchorElement>('.n')!
+              ),
+              class: entityFactory(
+                span.parentElement!.querySelector<HTMLAnchorElement>('.o')!
+              ),
+              chips: {
+                group: getGroup(span.textContent!),
+                advanced: isAdvanced(span.textContent!)
+              }
+            }))
           }
         })
-      ) as Plan['timetable'][keyof Plan['timetable']] // not exactly a good solution, but it works
+      ) as Plan['timetable'][Weekday] // not exactly a good solution, but it works
     }
 
     return {
@@ -230,4 +238,14 @@ export default class Scraper {
       hours
     } as Plan // i hate this
   }
+}
+
+/** Given "fizyka-1/2" returns "1/2", given "bhp" returns null */
+export function getGroup(subjectName: string): string | null {
+  let match = subjectName.match(/-(\d\/\d)$/)
+  return match ? match[1] : null
+}
+
+export function isAdvanced(subjectName: string): boolean {
+  return subjectName.trim().toLowerCase().startsWith('r_')
 }

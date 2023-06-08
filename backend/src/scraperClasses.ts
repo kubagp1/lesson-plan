@@ -1,5 +1,11 @@
 import { JSDOM } from 'jsdom'
-import { ScrapeResult, Urls, idGenerator } from './scraperFull.js'
+import {
+  ScrapeResult,
+  Urls,
+  getGroup,
+  idGenerator,
+  isAdvanced
+} from './scraperFull.js'
 import {
   ClassPlan,
   ClassroomPlan,
@@ -243,6 +249,10 @@ export default class Scraper {
                       planId: this.classroomPlansByShortName[roomShortName].id,
                       longName: roomShortName,
                       shortName: roomShortName
+                    },
+                    chips: {
+                      group: getGroup(subjectName),
+                      advanced: isAdvanced(subjectName)
                     }
                   })
                 }
@@ -286,6 +296,10 @@ export default class Scraper {
                       planId: this.teacherPlansByShortName[teacherShortName].id,
                       longName: teacherShortName,
                       shortName: teacherShortName
+                    },
+                    chips: {
+                      group: getGroup(subjectName),
+                      advanced: isAdvanced(subjectName)
                     }
                   })
                 }
@@ -303,6 +317,10 @@ export default class Scraper {
                     planId: this.classroomPlansByShortName[roomShortName].id,
                     longName: roomShortName,
                     shortName: roomShortName
+                  },
+                  chips: {
+                    group: getGroup(subjectName),
+                    advanced: isAdvanced(subjectName)
                   }
                 }
               })

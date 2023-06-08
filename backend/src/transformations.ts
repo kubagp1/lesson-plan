@@ -65,6 +65,13 @@ export function transformSubjectName(name: string): string {
 
   name = name.trim()
 
+  if (name.startsWith('r_')) {
+    name = name.slice(2)
+  }
+
+  // trim -1/2, -2/3 etc. from the end of the name
+  name = name.replace(/-\d\/\d$/, '')
+
   return name
 }
 

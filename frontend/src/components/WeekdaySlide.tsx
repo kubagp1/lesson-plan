@@ -1,4 +1,11 @@
-import { Table, TableBody, TableCell, TableRow, useTheme } from '@mui/material'
+import {
+  Chip,
+  Table,
+  TableBody,
+  TableCell,
+  TableRow,
+  useTheme
+} from '@mui/material'
 import { useContext, useEffect, useState } from 'react'
 import type { CategoryName, Plan, Weekday } from '../shared/types'
 import { AppContext } from './AppContext'
@@ -17,12 +24,19 @@ type WeekdaySlideProps = {
   isToday: boolean
 }
 
+type EntryCell = {
+  text: string
+  planId?: number
+  chipLeft?: string
+  chipRight?: string
+}
+
 type Entry = {
-  left: string
+  left: EntryCell
   centerAndRight: {
-    centerLeft: { text: string; planId?: number }
-    centerRight: { text: string; planId?: number }
-    right: { text: string; planId?: number }
+    centerLeft: EntryCell
+    centerRight: EntryCell
+    right: EntryCell
   }[]
   higlight: boolean
 }
@@ -111,7 +125,9 @@ export default function WeekdaySlide({
     const lessonsThisHour: Plan['timetable'][Weekday][0] = lessons[i]
 
     return {
-      left: hour,
+      left: {
+        text: hour
+      },
       centerAndRight: lessonsThisHour.map((lesson) => {
         if (lesson === null)
           return {
@@ -127,16 +143,26 @@ export default function WeekdaySlide({
               }
             : {
                 text: lesson.class.shortName,
-                planId: lesson.class.planId
+                planId: lesson.class.planId,
+                chipRight: lesson.chips.group ?? undefined
               },
           centerRight: lessonIsClassroomLesson(lesson)
             ? {
                 text: lesson.teacher.longName,
                 planId: lesson.teacher.planId
               }
-            : { text: lesson.name },
+            : {
+                text: lesson.name,
+                chipLeft: lessonIsClassLesson(lesson)
+                  ? lesson.chips.group ?? undefined
+                  : undefined,
+                chipRight: lesson.chips.advanced ? 'R' : undefined
+              },
           right: lessonIsClassroomLesson(lesson)
-            ? { text: lesson.name }
+            ? {
+                text: lesson.name,
+                chipRight: lesson.chips.advanced ? 'R' : undefined
+              }
             : {
                 text: lesson.classroom.shortName,
                 planId: lesson.classroom.planId
@@ -161,6 +187,38 @@ export default function WeekdaySlide({
   const hideCenterRight = hideColumnsConfiguration[category].centerRight
   const hideRight = hideColumnsConfiguration[category].right
 
+  const renderCell = (
+    cellSize: 'small' | 'medium',
+    className: string,
+    hidden: boolean,
+    entryCells: EntryCell[]
+  ) => {
+    return (
+      <TableCell
+        size={cellSize}
+        className={className}
+        sx={hidden ? { display: 'none' } : undefined}
+      >
+        {entryCells.map((entryCell, i) => (
+          <div
+            key={i}
+            onClick={
+              entryCell.planId !== undefined
+                ? () => {
+                    setPlanId(entryCell.planId!)
+                  }
+                : undefined
+            }
+          >
+            {chipFactory(entryCell.chipLeft, 'l')}
+            {entryCell.text}
+            {chipFactory(entryCell.chipRight, 'r')}
+          </div>
+        ))}
+      </TableCell>
+    )
+  }
+
   return (
     <div style={{ height: '100%' }} className="WeekdaySlide">
       <Table size="medium">
@@ -176,80 +234,48 @@ export default function WeekdaySlide({
                   backgroundColor: entry.higlight ? highlightColor : undefined
                 }}
               >
-                <TableCell size={cellSize} className="left">
-                  {entry.left}
-                </TableCell>
-                <TableCell
-                  size={cellSize}
-                  className="centerLeft"
-                  sx={hideCenterLeft ? { display: 'none' } : undefined}
-                >
-                  {entry.centerAndRight.map((centerAndRight, i) => (
-                    <div
-                      key={i}
-                      onClick={
-                        centerAndRight.centerLeft.planId !== undefined
-                          ? () => {
-                              setPlanId(centerAndRight.centerLeft.planId!)
-                            }
-                          : undefined
-                      }
-                    >
-                      {centerAndRight.centerLeft.text}
-                    </div>
-                  ))}
-                </TableCell>
-                <TableCell
-                  size={cellSize}
-                  className="centerRight"
-                  sx={hideCenterRight ? { display: 'none' } : undefined}
-                >
-                  {entry.centerAndRight.map((centerAndRight, i) => (
-                    <div
-                      key={i}
-                      onClick={
-                        centerAndRight.centerRight.planId !== undefined
-                          ? () => {
-                              setPlanId(centerAndRight.centerRight.planId!)
-                            }
-                          : undefined
-                      }
-                    >
-                      {centerAndRight.centerRight.text}
-                    </div>
-                  ))}
-                </TableCell>
-                <TableCell
-                  size={cellSize}
-                  onClick={
-                    entry.centerAndRight[0].right.planId !== undefined
-                      ? () => {
-                          setPlanId(entry.centerAndRight[0].right.planId!)
-                        }
-                      : undefined
-                  }
-                  sx={hideRight ? { display: 'none' } : undefined}
-                >
-                  {entry.centerAndRight.map((centerAndRight, i) => (
-                    <div
-                      key={i}
-                      onClick={
-                        centerAndRight.right.planId !== undefined
-                          ? () => {
-                              setPlanId(centerAndRight.right.planId!)
-                            }
-                          : undefined
-                      }
-                    >
-                      {centerAndRight.right.text}
-                    </div>
-                  ))}
-                </TableCell>
+                {renderCell(cellSize, 'left', false, [entry.left])}
+                {renderCell(
+                  cellSize,
+                  'centerLeft',
+                  hideCenterLeft,
+                  entry.centerAndRight.map(
+                    (centerAndRight) => centerAndRight.centerLeft
+                  )
+                )}
+                {renderCell(
+                  cellSize,
+                  'centerRight',
+                  hideCenterRight,
+                  entry.centerAndRight.map(
+                    (centerAndRight) => centerAndRight.centerRight
+                  )
+                )}
+                {renderCell(
+                  cellSize,
+                  'right',
+                  hideRight,
+                  entry.centerAndRight.map(
+                    (centerAndRight) => centerAndRight.right
+                  )
+                )}
               </TableRow>
             )
           })}
         </TableBody>
       </Table>
     </div>
+  )
+}
+
+function chipFactory(text: string | undefined, side: 'l' | 'r') {
+  if (text === undefined) return null
+  return (
+    <Chip
+      sx={{ [`m${side == 'l' ? 'r' : 'l'}`]: 0.5, my: 0.2 }}
+      label={text}
+      variant="filled"
+      size="small"
+    />
   )
 }
