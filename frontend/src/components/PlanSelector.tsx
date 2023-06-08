@@ -1,11 +1,13 @@
 import { useContext } from 'react'
 
 import {
+  Autocomplete,
   Box,
   createTheme,
   MenuItem,
   Select,
   SelectChangeEvent,
+  TextField,
   ThemeProvider
 } from '@mui/material'
 
@@ -68,10 +70,12 @@ export default function PlanSelector() {
     )
   }
 
-  const handlePlanIdChange = (e: SelectChangeEvent<string>) => {
-    if (categories.data === undefined) return
+  const handlePlanIdChangeSelect = (e: SelectChangeEvent<string>) => {
+    handlePlanIdChangeAutocomplete(parseInt(e.target.value))
+  }
 
-    const newPlanId = parseInt(e.target.value)
+  const handlePlanIdChangeAutocomplete = (newPlanId: number) => {
+    if (categories.data === undefined) return
     setPlanId(newPlanId)
 
     updateSavedSessionHelper(
@@ -112,24 +116,46 @@ export default function PlanSelector() {
     )
 
     var availablePlans = classByGrade[selectedGrade]
+
+    selects.push(
+      <Select
+        key="planSelect"
+        variant="standard"
+        value={planId!.toString()}
+        onChange={handlePlanIdChangeSelect}
+      >
+        {availablePlans.map((plan) => (
+          <MenuItem value={plan.planId} key={plan.planId}>
+            {truncateWithEllipses(plan.longName, 16)}
+          </MenuItem>
+        ))}
+      </Select>
+    )
   } else {
     var availablePlans = categories.data[selectedCategoryName]
-  }
 
-  selects.push(
-    <Select
-      key="planSelect"
-      variant="standard"
-      value={planId!.toString()}
-      onChange={handlePlanIdChange}
-    >
-      {availablePlans.map((plan) => (
-        <MenuItem value={plan.planId} key={plan.planId}>
-          {plan.longName}
-        </MenuItem>
-      ))}
-    </Select>
-  )
+    selects.push(
+      <Autocomplete
+        key="planAutocomplete"
+        value={availablePlans.find((plan) => plan.planId === planId)}
+        onChange={(event, newValue) => {
+          handlePlanIdChangeAutocomplete(newValue.planId)
+        }}
+        disableClearable
+        options={availablePlans}
+        getOptionLabel={(option) => option.longName}
+        renderInput={(params) => (
+          <TextField
+            {...params}
+            autoCorrect="off"
+            autoCapitalize="off"
+            autoComplete="off"
+            variant="standard"
+          />
+        )}
+      />
+    )
+  }
 
   return (
     <ThemeProvider
@@ -149,4 +175,8 @@ export default function PlanSelector() {
       </Box>
     </ThemeProvider>
   )
+}
+
+function truncateWithEllipses(text: string, max: number) {
+  return text.substring(0, max - 1) + (text.length > max ? '…' : '')
 }
