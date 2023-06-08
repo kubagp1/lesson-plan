@@ -272,7 +272,7 @@ function chipFactory(text: string | undefined, side: 'l' | 'r') {
   if (text === undefined) return null
   return (
     <Chip
-      sx={{ [`m${side == 'l' ? 'r' : 'l'}`]: 0.5, my: 0.1 }}
+      sx={{ [`m${side == 'l' ? 'r' : 'l'}`]: 0.5, my: 0.2 }}
       label={text}
       variant="filled"
       size="small"
