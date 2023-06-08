@@ -126,7 +126,7 @@ export default function PlanSelector() {
       >
         {availablePlans.map((plan) => (
           <MenuItem value={plan.planId} key={plan.planId}>
-            {plan.longName}
+            {truncateWithEllipses(plan.longName, 16)}
           </MenuItem>
         ))}
       </Select>
@@ -175,4 +175,8 @@ export default function PlanSelector() {
       </Box>
     </ThemeProvider>
   )
+}
+
+function truncateWithEllipses(text: string, max: number) {
+  return text.substring(0, max - 1) + (text.length > max ? '…' : '')
 }
