@@ -8,6 +8,10 @@ The frontend of the application is a Single Page Application built with React an
 
 ## Features
 
+- Dark mode
+- Show metadata about a plan
+- Searchable categories
+- Warns when plan is stale
 - Able to derive teacher and classroom plans only from classes plans
 - Click on any teacher room or class to redirect to its plan
 - Dynamic URL routing
