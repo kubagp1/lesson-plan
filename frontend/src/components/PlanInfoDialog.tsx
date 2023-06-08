@@ -20,7 +20,17 @@ export default function PlanInfoDialog(props: Props) {
   const { plan } = useContext(AppContext)
 
   if (plan.data == undefined) {
-    return null
+    return (
+      <Dialog open={open} onClose={handleClose}>
+        <DialogTitle variant="h5">Informacje o planie</DialogTitle>
+        <DialogContent>
+          <DialogContentText>Ładowanie...</DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClose}>Zamknij</Button>
+        </DialogActions>
+      </Dialog>
+    )
   }
 
   return (

@@ -6,42 +6,27 @@ import { useState, MouseEvent, Fragment, useEffect } from 'react'
 import HideColumnsDialog from './HideColumnsDialog'
 import DarkModeDialog from './DarkModeDialog'
 import PlanInfoDialog from './PlanInfoDialog'
+import useTooltip from './OptionsMenu_useTooltip'
+
+const options = [
+  {
+    name: 'Ukryj / pokaż kolumny',
+    dialog: HideColumnsDialog
+  },
+  {
+    name: 'Ciemny motyw',
+    dialog: DarkModeDialog
+  },
+  {
+    name: 'Informacje o planie',
+    dialog: PlanInfoDialog
+  }
+]
 
 export default function OptionsMenu() {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
-  const [hideColumnsDialogOpen, setHideColumnsDialogOpen] = useState(false)
-  const [darkModeDialogOpen, setDarkModeDialogOpen] = useState(false)
-  const [planInfoDialogOpen, setPlanInfoDialogOpen] = useState(false)
-  const [tooltipOpen, setTooltipOpen] = useState(false)
 
-  useEffect(() => {
-    let timeout: number | undefined
-    if (localStorage.getItem('hideColumnsTooltip') === null) {
-      const handleAnyClick = () => {
-        localStorage.setItem('hideColumnsTooltip', 'true')
-        setTooltipOpen(false)
-        clearTimeout(timeout)
-      }
-
-      setTooltipOpen(true)
-
-      timeout = setTimeout(() => {
-        localStorage.setItem('hideColumnsTooltip', 'true')
-        setTooltipOpen(false)
-        document.removeEventListener('click', handleAnyClick)
-        document.removeEventListener('touchstart', handleAnyClick)
-      }, 5000)
-
-      document.addEventListener('click', handleAnyClick)
-      document.addEventListener('touchstart', handleAnyClick)
-
-      return () => {
-        clearTimeout(timeout)
-        document.removeEventListener('click', handleAnyClick)
-        document.removeEventListener('touchstart', handleAnyClick)
-      }
-    }
-  }, [])
+  const tooltipOpen = useTooltip()
 
   const handleClick = (event: MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget)
@@ -50,30 +35,23 @@ export default function OptionsMenu() {
     setAnchorEl(null)
   }
 
-  const handleHideColumnsClick = () => {
+  const [dialogsState, setDialogsState] = useState(options.map(() => false))
+
+  const handleDialogClose = (index: number) => {
+    setDialogsState((dialogsState) => {
+      const newDialogsState = [...dialogsState]
+      newDialogsState[index] = false
+      return newDialogsState
+    })
+  }
+
+  const handleOptionClick = (index: number) => {
+    setDialogsState((dialogsState) => {
+      const newDialogsState = [...dialogsState]
+      newDialogsState[index] = true
+      return newDialogsState
+    })
     handleClose()
-    setHideColumnsDialogOpen(true)
-  }
-  const handleHideColumnsDialogClose = () => {
-    setHideColumnsDialogOpen(false)
-  }
-
-  const handleDarkModeClick = () => {
-    handleClose()
-    setDarkModeDialogOpen(true)
-  }
-
-  const handleDarkModeDialogClose = () => {
-    setDarkModeDialogOpen(false)
-  }
-
-  const handlePlanInfoClick = () => {
-    handleClose()
-    setPlanInfoDialogOpen(true)
-  }
-
-  const handlePlanInfoDialogClose = () => {
-    setPlanInfoDialogOpen(false)
   }
 
   const open = Boolean(anchorEl)
@@ -104,6 +82,7 @@ export default function OptionsMenu() {
           <MoreIcon />
         </IconButton>
       </Tooltip>
+
       <Menu
         anchorEl={anchorEl}
         open={open}
@@ -113,25 +92,23 @@ export default function OptionsMenu() {
           horizontal: 'right'
         }}
       >
-        <MenuItem onClick={handleHideColumnsClick}>
-          Ukryj / pokaż kolumny
-        </MenuItem>
-        <MenuItem onClick={handleDarkModeClick}>Ciemny motyw</MenuItem>
-        <MenuItem onClick={handlePlanInfoClick}>Informacje o planie</MenuItem>
+        {options.map((option, index) => (
+          <MenuItem key={index} onClick={() => handleOptionClick(index)}>
+            {option.name}
+          </MenuItem>
+        ))}
       </Menu>
 
-      <HideColumnsDialog
-        open={hideColumnsDialogOpen}
-        handleClose={handleHideColumnsDialogClose}
-      />
-      <DarkModeDialog
-        open={darkModeDialogOpen}
-        handleClose={handleDarkModeDialogClose}
-      />
-      <PlanInfoDialog
-        open={planInfoDialogOpen}
-        handleClose={handlePlanInfoDialogClose}
-      />
+      {options.map((option, index) => {
+        const Dialog = option.dialog
+        return (
+          <Dialog
+            key={index}
+            open={dialogsState[index]}
+            handleClose={() => handleDialogClose(index)}
+          />
+        )
+      })}
     </Fragment>
   )
 }
