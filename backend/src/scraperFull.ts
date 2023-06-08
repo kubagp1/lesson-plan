@@ -236,7 +236,7 @@ export default class Scraper {
       id: plan.id,
       timetable,
       hours,
-      metadata: getMetadata(document, absoluteUrl)
+      metadata: getMetadata(document, absoluteUrl, 'full')
     } as Plan // i hate this
   }
 }

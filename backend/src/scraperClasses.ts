@@ -186,7 +186,7 @@ export default class Scraper {
                     },
                     hours: [],
                     id: this.idGenerator.next().value,
-                    metadata: getMetadata(document, absoluteUrl)
+                    metadata: getMetadata(document, absoluteUrl, 'classes')
                   }
                 }
 
@@ -202,7 +202,7 @@ export default class Scraper {
                     },
                     hours: [],
                     id: this.idGenerator.next().value,
-                    metadata: getMetadata(document, absoluteUrl)
+                    metadata: getMetadata(document, absoluteUrl, 'classes')
                   }
                 }
 
@@ -333,7 +333,7 @@ export default class Scraper {
       timetable: timetable,
       hours: hours,
       id: planId,
-      metadata: getMetadata(document, absoluteUrl)
+      metadata: getMetadata(document, absoluteUrl, 'classes')
     }
   }
 

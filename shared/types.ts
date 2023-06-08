@@ -47,6 +47,7 @@ export type Metadata = {
   generatedAt: string
   applicableAt: string
   scrapedFrom: string
+  scrapedUsing: 'full' | 'classes'
 }
 
 export type Plan = ClassPlan | TeacherPlan | ClassroomPlan

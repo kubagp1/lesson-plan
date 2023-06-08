@@ -1,6 +1,10 @@
 const DATE_REGEX = /(\d{2}\.\d{2}\.\d{4})/
 
-export function getMetadata(document: Document, url: string) {
+export function getMetadata(
+  document: Document,
+  url: string,
+  scraper: 'full' | 'classes'
+) {
   // body > div > table > tbody > tr:nth-child(2) > td contains a string like "Obowiązuje od: 10.05.2023"
   const applicableAtEl = document.querySelector(
     'body > div > table > tbody > tr:nth-child(2) > td'
@@ -34,7 +38,8 @@ export function getMetadata(document: Document, url: string) {
     applicableAt,
     generatedAt,
     scrapedAt: new Date().toJSON(),
-    scrapedFrom: url
+    scrapedFrom: url,
+    scrapedUsing: scraper
   }
   return metadata
 }
