@@ -32,7 +32,7 @@ type EntryCell = {
 }
 
 type Entry = {
-  left: string
+  left: EntryCell
   centerAndRight: {
     centerLeft: EntryCell
     centerRight: EntryCell
@@ -125,7 +125,9 @@ export default function WeekdaySlide({
     const lessonsThisHour: Plan['timetable'][Weekday][0] = lessons[i]
 
     return {
-      left: hour,
+      left: {
+        text: hour
+      },
       centerAndRight: lessonsThisHour.map((lesson) => {
         if (lesson === null)
           return {
@@ -185,6 +187,38 @@ export default function WeekdaySlide({
   const hideCenterRight = hideColumnsConfiguration[category].centerRight
   const hideRight = hideColumnsConfiguration[category].right
 
+  const renderCell = (
+    cellSize: 'small' | 'medium',
+    className: string,
+    hidden: boolean,
+    entryCells: EntryCell[]
+  ) => {
+    return (
+      <TableCell
+        size={cellSize}
+        className={className}
+        sx={hidden ? { display: 'none' } : undefined}
+      >
+        {entryCells.map((entryCell, i) => (
+          <div
+            key={i}
+            onClick={
+              entryCell.planId !== undefined
+                ? () => {
+                    setPlanId(entryCell.planId!)
+                  }
+                : undefined
+            }
+          >
+            {chipFactory(entryCell.chipLeft, 'l')}
+            {entryCell.text}
+            {chipFactory(entryCell.chipRight, 'r')}
+          </div>
+        ))}
+      </TableCell>
+    )
+  }
+
   return (
     <div style={{ height: '100%' }} className="WeekdaySlide">
       <Table size="medium">
@@ -200,81 +234,31 @@ export default function WeekdaySlide({
                   backgroundColor: entry.higlight ? highlightColor : undefined
                 }}
               >
-                <TableCell size={cellSize} className="left">
-                  {entry.left}
-                </TableCell>
-                <TableCell
-                  size={cellSize}
-                  className="centerLeft"
-                  sx={hideCenterLeft ? { display: 'none' } : undefined}
-                >
-                  {entry.centerAndRight.map((centerAndRight, i) => (
-                    <div
-                      key={i}
-                      onClick={
-                        centerAndRight.centerLeft.planId !== undefined
-                          ? () => {
-                              setPlanId(centerAndRight.centerLeft.planId!)
-                            }
-                          : undefined
-                      }
-                    >
-                      {chipFactory(centerAndRight.centerLeft.chipLeft, 'l')}
-                      {centerAndRight.centerLeft.text}
-                      {chipFactory(centerAndRight.centerLeft.chipRight, 'r')}
-                    </div>
-                  ))}
-                </TableCell>
-                <TableCell
-                  size={cellSize}
-                  className="centerRight"
-                  sx={hideCenterRight ? { display: 'none' } : undefined}
-                >
-                  {entry.centerAndRight.map((centerAndRight, i) => (
-                    <div
-                      key={i}
-                      onClick={
-                        centerAndRight.centerRight.planId !== undefined
-                          ? () => {
-                              setPlanId(centerAndRight.centerRight.planId!)
-                            }
-                          : undefined
-                      }
-                    >
-                      {chipFactory(centerAndRight.centerRight.chipLeft, 'l')}
-                      {centerAndRight.centerRight.text}
-                      {chipFactory(centerAndRight.centerRight.chipRight, 'r')}
-                    </div>
-                  ))}
-                </TableCell>
-                <TableCell
-                  size={cellSize}
-                  onClick={
-                    entry.centerAndRight[0].right.planId !== undefined
-                      ? () => {
-                          setPlanId(entry.centerAndRight[0].right.planId!)
-                        }
-                      : undefined
-                  }
-                  sx={hideRight ? { display: 'none' } : undefined}
-                >
-                  {entry.centerAndRight.map((centerAndRight, i) => (
-                    <div
-                      key={i}
-                      onClick={
-                        centerAndRight.right.planId !== undefined
-                          ? () => {
-                              setPlanId(centerAndRight.right.planId!)
-                            }
-                          : undefined
-                      }
-                    >
-                      {chipFactory(centerAndRight.right.chipLeft, 'l')}
-                      {centerAndRight.right.text}
-                      {chipFactory(centerAndRight.right.chipRight, 'r')}
-                    </div>
-                  ))}
-                </TableCell>
+                {renderCell(cellSize, 'left', false, [entry.left])}
+                {renderCell(
+                  cellSize,
+                  'centerLeft',
+                  hideCenterLeft,
+                  entry.centerAndRight.map(
+                    (centerAndRight) => centerAndRight.centerLeft
+                  )
+                )}
+                {renderCell(
+                  cellSize,
+                  'centerRight',
+                  hideCenterRight,
+                  entry.centerAndRight.map(
+                    (centerAndRight) => centerAndRight.centerRight
+                  )
+                )}
+                {renderCell(
+                  cellSize,
+                  'right',
+                  hideRight,
+                  entry.centerAndRight.map(
+                    (centerAndRight) => centerAndRight.right
+                  )
+                )}
               </TableRow>
             )
           })}
