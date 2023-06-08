@@ -135,9 +135,8 @@ export default class Scraper {
     plan: ScrapePlanListResult[0],
     planList: ScrapePlanListResult
   ): Promise<Plan> {
-    const planHTML = await (
-      await fetch(new URL(plan.url, this.urls.entrypoint).toString())
-    ).text()
+    const absoluteUrl = new URL(plan.url, this.urls.entrypoint).toString()
+    const planHTML = await (await fetch(absoluteUrl)).text()
 
     const document = new JSDOM(planHTML).window.document
 
@@ -237,7 +236,7 @@ export default class Scraper {
       id: plan.id,
       timetable,
       hours,
-      metadata: getMetadata(document)
+      metadata: getMetadata(document, absoluteUrl)
     } as Plan // i hate this
   }
 }

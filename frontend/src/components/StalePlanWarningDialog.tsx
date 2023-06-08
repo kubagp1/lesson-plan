@@ -16,6 +16,21 @@ export default function StalePlanWarningDialog() {
   const [open, setOpen] = useState(false)
 
   useEffect(() => {
+    if (import.meta.env.DEV) {
+      const handle = (e: KeyboardEvent): void => {
+        if (e.key === 'p') {
+          setOpen(true)
+        }
+      }
+      document.addEventListener('keydown', handle)
+
+      return () => {
+        document.removeEventListener('keydown', handle)
+      }
+    }
+  }, [])
+
+  useEffect(() => {
     if (plan.data?.metadata.scrapedAt == undefined) {
       return
     }
@@ -57,7 +72,7 @@ export default function StalePlanWarningDialog() {
           Jeśli ten problem będzie się powtarzał, skontaktuj się z
           administratorem.
         </DialogContentText>
-        <a href="#">
+        <a href={plan.data.metadata.scrapedFrom}>
           <Button size="large" fullWidth variant="contained" sx={{ my: 2 }}>
             Pzejdź do oficjalnej strony z planem
           </Button>

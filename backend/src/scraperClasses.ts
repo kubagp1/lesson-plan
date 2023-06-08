@@ -120,9 +120,8 @@ export default class Scraper {
 
     let planId = this.idGenerator.next().value
 
-    let planHTML = await (
-      await fetch(new URL(url, this.urls.entrypoint).toString())
-    ).text()
+    const absoluteUrl = new URL(url, this.urls.entrypoint).toString()
+    let planHTML = await (await fetch(absoluteUrl)).text()
 
     let document = new JSDOM(planHTML).window.document
 
@@ -187,7 +186,7 @@ export default class Scraper {
                     },
                     hours: [],
                     id: this.idGenerator.next().value,
-                    metadata: getMetadata(document)
+                    metadata: getMetadata(document, absoluteUrl)
                   }
                 }
 
@@ -203,7 +202,7 @@ export default class Scraper {
                     },
                     hours: [],
                     id: this.idGenerator.next().value,
-                    metadata: getMetadata(document)
+                    metadata: getMetadata(document, absoluteUrl)
                   }
                 }
 
@@ -334,7 +333,7 @@ export default class Scraper {
       timetable: timetable,
       hours: hours,
       id: planId,
-      metadata: getMetadata(document)
+      metadata: getMetadata(document, absoluteUrl)
     }
   }
 
