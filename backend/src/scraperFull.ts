@@ -13,6 +13,7 @@ import {
   Weekday
 } from './shared/types.js'
 import { applyTransformations } from './transformations.js'
+import { getGroup, getMetadata, isAdvanced } from './utils.js'
 
 export type ScrapeResult = {
   categories: Categories
@@ -235,17 +236,8 @@ export default class Scraper {
     return {
       id: plan.id,
       timetable,
-      hours
+      hours,
+      metadata: getMetadata(document)
     } as Plan // i hate this
   }
-}
-
-/** Given "fizyka-1/2" returns "1/2", given "bhp" returns null */
-export function getGroup(subjectName: string): string | null {
-  let match = subjectName.match(/-(\d\/\d)$/)
-  return match ? match[1] : null
-}
-
-export function isAdvanced(subjectName: string): boolean {
-  return subjectName.trim().toLowerCase().startsWith('r_')
 }

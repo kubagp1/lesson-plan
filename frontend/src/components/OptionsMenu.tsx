@@ -4,13 +4,14 @@ import Menu from '@mui/material/Menu'
 import MenuItem from '@mui/material/MenuItem'
 import { useState, MouseEvent, Fragment, useEffect } from 'react'
 import HideColumnsDialog from './HideColumnsDialog'
-import { DarkMode } from '@mui/icons-material'
 import DarkModeDialog from './DarkModeDialog'
+import PlanInfoDialog from './PlanInfoDialog'
 
 export default function OptionsMenu() {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
   const [hideColumnsDialogOpen, setHideColumnsDialogOpen] = useState(false)
   const [darkModeDialogOpen, setDarkModeDialogOpen] = useState(false)
+  const [planInfoDialogOpen, setPlanInfoDialogOpen] = useState(false)
   const [tooltipOpen, setTooltipOpen] = useState(false)
 
   useEffect(() => {
@@ -66,6 +67,15 @@ export default function OptionsMenu() {
     setDarkModeDialogOpen(false)
   }
 
+  const handlePlanInfoClick = () => {
+    handleClose()
+    setPlanInfoDialogOpen(true)
+  }
+
+  const handlePlanInfoDialogClose = () => {
+    setPlanInfoDialogOpen(false)
+  }
+
   const open = Boolean(anchorEl)
 
   return (
@@ -107,6 +117,7 @@ export default function OptionsMenu() {
           Ukryj / pokaż kolumny
         </MenuItem>
         <MenuItem onClick={handleDarkModeClick}>Ciemny motyw</MenuItem>
+        <MenuItem onClick={handlePlanInfoClick}>Informacje o planie</MenuItem>
       </Menu>
 
       <HideColumnsDialog
@@ -116,6 +127,10 @@ export default function OptionsMenu() {
       <DarkModeDialog
         open={darkModeDialogOpen}
         handleClose={handleDarkModeDialogClose}
+      />
+      <PlanInfoDialog
+        open={planInfoDialogOpen}
+        handleClose={handlePlanInfoDialogClose}
       />
     </Fragment>
   )

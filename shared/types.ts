@@ -42,6 +42,12 @@ export type Chips = {
   advanced: boolean
 }
 
+export type Metadata = {
+  scrapedAt: string
+  generatedAt: string
+  applicableAt: string
+}
+
 export type Plan = ClassPlan | TeacherPlan | ClassroomPlan
 export type Lesson = ClassLesson | TeacherLesson | ClassroomLesson
 
@@ -54,6 +60,7 @@ export type ClassLesson = {
 
 export type ClassPlan = {
   id: number
+  metadata: Metadata
   timetable: {
     [key in Weekday]: (ClassLesson | null)[][]
   }
@@ -69,6 +76,7 @@ export type TeacherLesson = {
 
 export type TeacherPlan = {
   id: number
+  metadata: Metadata
   timetable: {
     [key in Weekday]: (TeacherLesson | null)[][]
   }
@@ -84,6 +92,7 @@ export type ClassroomLesson = {
 
 export type ClassroomPlan = {
   id: number
+  metadata: Metadata
   timetable: {
     [key in Weekday]: (ClassroomLesson | null)[][]
   }

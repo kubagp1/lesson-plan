@@ -43,7 +43,7 @@ export default function DarkModeDialog(props: Props) {
         </FormControl>
       </DialogContent>
       <DialogActions>
-        <Button onClick={handleClose}>Close</Button>
+        <Button onClick={handleClose}>Zamknij</Button>
       </DialogActions>
     </Dialog>
   )
