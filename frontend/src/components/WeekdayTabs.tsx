@@ -14,7 +14,8 @@ export function getCurrentWeekday(): Weekday {
 const labels = ['pon.', 'wt.', 'śr.', 'czw.', 'pt.']
 
 export default function WeekdayTabs() {
-  const { weekday, setWeekday } = useContext(WeekdayContext)
+  const { weekday: selectedWeekday, setWeekday: setSelectedWeekday } =
+    useContext(WeekdayContext)
 
   return (
     <Tabs
@@ -24,7 +25,7 @@ export default function WeekdayTabs() {
         borderColor: 'divider',
         backgroundColor: 'background.paper'
       }}
-      value={weekday}
+      value={selectedWeekday}
     >
       {weekdays.map((weekday) => (
         <Tab
@@ -33,7 +34,7 @@ export default function WeekdayTabs() {
           label={labels[weekdays.indexOf(weekday)]}
           value={weekday}
           onClick={() => {
-            setWeekday(weekday)
+            setSelectedWeekday(weekday)
           }}
         />
       ))}
