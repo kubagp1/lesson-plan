@@ -101,8 +101,16 @@ export function AppContextProvider({
       value={{
         planId,
         setPlanId,
-        plan,
-        categories
+        plan: {
+          data: plan.data,
+          isLoading: plan.isLoading,
+          isError: plan.isError
+        },
+        categories: {
+          data: categories.data,
+          isLoading: categories.isLoading,
+          isError: categories.isError
+        }
       }}
     >
       {children}
