@@ -38,8 +38,8 @@ const EmblaCarousel: React.FC<PropType> = (props) => {
     <div className="embla">
       <div className="embla__viewport" ref={emblaRef}>
         <div className="embla__container">
-          {Children.map(children, (child) => (
-            <div className="embla__slide" key={index}>
+          {Children.map(children, (child, i) => (
+            <div className="embla__slide" key={i}>
               {child}
             </div>
           ))}
