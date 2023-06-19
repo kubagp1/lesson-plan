@@ -6,7 +6,7 @@ import {
   TableRow,
   useTheme
 } from '@mui/material'
-import { useContext, useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import type { CategoryName, Plan, Weekday } from '../shared/types'
 import { AppContext } from './AppContext'
 import { HideColumnsContext } from './HideColumnsContext'
@@ -96,7 +96,7 @@ function getSecondsSinceMidnight(): number {
   return hours * 3600 + minutes * 60
 }
 
-export default function WeekdaySlide({
+export default React.memo(function WeekdaySlide({
   lessons,
   hours,
   isToday
@@ -266,7 +266,7 @@ export default function WeekdaySlide({
       </Table>
     </div>
   )
-}
+})
 
 function chipFactory(text: string | undefined, side: 'l' | 'r') {
   if (text === undefined) return null

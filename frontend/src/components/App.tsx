@@ -11,12 +11,11 @@ import { DarkModeProvider } from './DarkModeContext'
 import { AppContextProvider } from './AppContext'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import StalePlanWarningDialog from './StalePlanWarningDialog'
+import { WeekdayContextProvider } from './WeekdayContext'
 
 const queryClient = new QueryClient()
 
 export default function App() {
-  const [weekday, setWeekday] = useState<Weekday>(getCurrentWeekday())
-
   return (
     <QueryClientProvider client={queryClient}>
       <AppContextProvider>
@@ -29,28 +28,27 @@ export default function App() {
                 height: '100%'
               }}
             >
-              <Box
-                sx={{
-                  position: 'sticky',
-                  top: 0,
-                  zIndex: 1100 // z-index of AppBar
-                  // backgroundColor: '#fff'
-                }}
-              >
-                <AppBar position="static">
-                  <Toolbar>
-                    <Box sx={{ flexGrow: 1 }}>
-                      <PlanSelector />
-                    </Box>
-                    <OptionsMenu />
-                  </Toolbar>
-                </AppBar>
-                <WeekdayTabs
-                  weekday={weekday}
-                  setWeekday={setWeekday}
-                ></WeekdayTabs>
-              </Box>
-              <WeekdaySlider weekday={weekday} setWeekday={setWeekday} />
+              <WeekdayContextProvider>
+                <Box
+                  sx={{
+                    position: 'sticky',
+                    top: 0,
+                    zIndex: 1100 // z-index of AppBar
+                    // backgroundColor: '#fff'
+                  }}
+                >
+                  <AppBar position="static">
+                    <Toolbar>
+                      <Box sx={{ flexGrow: 1 }}>
+                        <PlanSelector />
+                      </Box>
+                      <OptionsMenu />
+                    </Toolbar>
+                  </AppBar>
+                  <WeekdayTabs />
+                </Box>
+                <WeekdaySlider />
+              </WeekdayContextProvider>
             </Box>
             <StalePlanWarningDialog />
           </DarkModeProvider>

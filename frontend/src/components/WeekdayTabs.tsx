@@ -1,5 +1,7 @@
 import { Tab, Tabs } from '@mui/material'
 import { Weekday, weekdays } from '../shared/types'
+import { useContext } from 'react'
+import { WeekdayContext } from './WeekdayContext'
 
 export function getCurrentWeekday(): Weekday {
   const date = new Date()
@@ -11,12 +13,10 @@ export function getCurrentWeekday(): Weekday {
 
 const labels = ['pon.', 'wt.', 'śr.', 'czw.', 'pt.']
 
-interface WeekdayTabsProps {
-  weekday: Weekday
-  setWeekday: (weekday: Weekday) => void
-}
+export default function WeekdayTabs() {
+  const { weekday: selectedWeekday, setWeekday: setSelectedWeekday } =
+    useContext(WeekdayContext)
 
-export default function WeekdayTabs({ weekday, setWeekday }: WeekdayTabsProps) {
   return (
     <Tabs
       variant="fullWidth"
@@ -25,7 +25,7 @@ export default function WeekdayTabs({ weekday, setWeekday }: WeekdayTabsProps) {
         borderColor: 'divider',
         backgroundColor: 'background.paper'
       }}
-      value={weekday}
+      value={selectedWeekday}
     >
       {weekdays.map((weekday) => (
         <Tab
@@ -34,7 +34,7 @@ export default function WeekdayTabs({ weekday, setWeekday }: WeekdayTabsProps) {
           label={labels[weekdays.indexOf(weekday)]}
           value={weekday}
           onClick={() => {
-            setWeekday(weekday)
+            setSelectedWeekday(weekday)
           }}
         />
       ))}

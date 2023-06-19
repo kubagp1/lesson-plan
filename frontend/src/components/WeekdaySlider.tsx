@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from 'react'
+import { useContext, useEffect, useMemo, useState } from 'react'
 
 import { Plan, Weekday, weekdays } from '../shared/types'
 import WeekdaySlide from './WeekdaySlide'
@@ -6,19 +6,35 @@ import apiCalls from '../apiCalls'
 import EmblaCarousel from './EmblaCarousel'
 import { Box, CircularProgress } from '@mui/material'
 import { AppContext } from './AppContext'
+import { WeekdayContext } from './WeekdayContext'
 
-interface WeekdayViewsProps {
-  weekday: Weekday
-  setWeekday: (weekday: Weekday) => void
-}
-
-export default function WeekdayViews({
-  weekday,
-  setWeekday
-}: WeekdayViewsProps) {
+export default function WeekdaySlider() {
   const { plan: planQuery } = useContext(AppContext)
+  const { weekday, setWeekday } = useContext(WeekdayContext)
 
   const { data: plan, isLoading, isError } = planQuery
+
+  type WeekdayLessonDict = { [K in Weekday]: Plan['timetable'][Weekday] }
+  // for readability
+
+  const weekdayLessonDict = useMemo(() => {
+    if (!plan) return {} as WeekdayLessonDict
+    return weekdays.reduce<WeekdayLessonDict>((acc, weekday) => {
+      return { ...acc, ...{ [weekday]: plan.timetable[weekday] } }
+    }, {} as WeekdayLessonDict)
+  }, [plan])
+
+  const slides = useMemo(() => {
+    if (!plan) return []
+    return weekdays.map((weekday) => (
+      <WeekdaySlide
+        key={weekday}
+        lessons={weekdayLessonDict[weekday]}
+        hours={plan.hours}
+        isToday={isToday(weekday)}
+      ></WeekdaySlide>
+    ))
+  }, [plan])
 
   if (isLoading)
     return (
@@ -31,16 +47,6 @@ export default function WeekdayViews({
 
   if (isError) return <div>Error</div> // TODO: Better error
 
-  type WeekdayLessonDict = { [K in Weekday]: Plan['timetable'][Weekday] }
-  // for readability
-
-  const weekdayLessonDict = weekdays.reduce<WeekdayLessonDict>(
-    (acc, weekday) => {
-      return { ...acc, ...{ [weekday]: plan!.timetable[weekday] } }
-    },
-    {} as WeekdayLessonDict
-  )
-
   return (
     <EmblaCarousel
       index={weekdays.indexOf(weekday)}
@@ -48,14 +54,7 @@ export default function WeekdayViews({
         setWeekday(weekdays[index])
       }}
     >
-      {weekdays.map((weekday) => (
-        <WeekdaySlide
-          key={weekday}
-          lessons={weekdayLessonDict[weekday]}
-          hours={plan!.hours}
-          isToday={isToday(weekday)}
-        ></WeekdaySlide>
-      ))}
+      {slides}
     </EmblaCarousel>
   )
 }
