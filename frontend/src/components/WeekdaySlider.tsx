@@ -69,9 +69,12 @@ export default function WeekdaySlider() {
         <Typography textAlign="center">
           {t('Failed to load. Please check your internet connection.')}
         </Typography>
-        <Button variant="contained" fullWidth size="large">
-          {t('Go to original plan site')}
-        </Button>
+
+        <a href={import.meta.env.VITE_FALLBACK_URL || 'http://example.com'}>
+          <Button variant="contained" fullWidth size="large">
+            {t('Go to original plan site')}
+          </Button>
+        </a>
       </Box>
     )
 
