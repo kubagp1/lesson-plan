@@ -24,6 +24,7 @@ import {
   updateSavedSessionHelper
 } from '../lib/savedSession'
 import { useTranslation } from 'react-i18next'
+import naturalCompare from 'string-natural-compare'
 
 export default function PlanSelector() {
   const { t } = useTranslation()
@@ -137,7 +138,26 @@ export default function PlanSelector() {
       </Select>
     )
   } else {
-    var availablePlans = categories.data[selectedCategoryName]
+    let availablePlans = categories.data[selectedCategoryName].sort((a, b) => {
+      if (selectedCategoryName === 'teacher') {
+        // alphabetically but numbers last
+        const nameA = a.longName.toLowerCase()
+        const nameB = b.longName.toLowerCase()
+        const isNumberA = !isNaN(parseInt(nameA))
+        const isNumberB = !isNaN(parseInt(nameB))
+
+        if (isNumberA && !isNumberB) {
+          return 1
+        } else if (!isNumberA && isNumberB) {
+          return -1
+        } else {
+          return nameA.localeCompare(nameB)
+        }
+      }
+
+      // alphabetically but numbers first
+      return naturalCompare(a.longName, b.longName)
+    })
 
     selects.push(
       <Autocomplete
