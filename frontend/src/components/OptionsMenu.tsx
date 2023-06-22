@@ -8,6 +8,7 @@ import DarkModeDialog from './DarkModeDialog'
 import PlanInfoDialog from './PlanInfoDialog'
 
 import { useTranslation } from 'react-i18next'
+import ChangeLanguageDialog from './ChangeLanguageDialog'
 
 export default function OptionsMenu() {
   const { t } = useTranslation()
@@ -24,6 +25,10 @@ export default function OptionsMenu() {
     {
       name: t('About this plan'),
       dialog: PlanInfoDialog
+    },
+    {
+      name: t('Change language'),
+      dialog: ChangeLanguageDialog
     }
   ]
 

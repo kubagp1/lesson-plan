@@ -17,6 +17,7 @@ const resources = {
 }
 
 let initOptions: InitOptions = {
+  fallbackLng: 'en',
   resources,
   interpolation: {
     escapeValue: false // react already safes from xss
