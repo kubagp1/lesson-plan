@@ -69,7 +69,9 @@ export default function HideColumnsDialog({
       <Dialog open={open} onClose={handleClose} fullWidth>
         <DialogTitle variant="h5">{t('Hide / show columns')}</DialogTitle>
         <DialogContent>
-          <DialogContentText sx={{ marginBottom: '12px' }}></DialogContentText>
+          <DialogContentText sx={{ marginBottom: '12px' }}>
+            {t('Select the columns to be shown for each category')}
+          </DialogContentText>
           <section>
             <Typography variant="h6">{t('Students')}</Typography>
             {checkBoxesFactory('class', [
