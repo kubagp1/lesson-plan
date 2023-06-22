@@ -1,3 +1,5 @@
+import { Categories, Plan } from './shared/types'
+
 const DATE_REGEX = /(\d{2}\.\d{2}\.\d{4})/
 
 export function getMetadata(
@@ -56,4 +58,42 @@ export function getGroup(subjectName: string): string | null {
 
 export function isAdvanced(subjectName: string): boolean {
   return subjectName.trim().toLowerCase().startsWith('r_')
+}
+
+export function removeEmptyPlans(
+  categories: Categories,
+  plans: { [key: string]: Plan }
+) {
+  let planIdsToRemove: string[] = []
+
+  for (let planId in plans) {
+    let plan = plans[planId]
+
+    let isEmpty = true
+    let weekday: keyof Plan['timetable']
+    for (weekday in plan.timetable) {
+      if (
+        plan.timetable[weekday].some((row) =>
+          row.some((entry) => entry != null)
+        )
+      ) {
+        isEmpty = false
+        break
+      }
+    }
+
+    if (isEmpty) {
+      delete plans[planId]
+      planIdsToRemove.push(planId)
+    }
+  }
+
+  for (let planId of planIdsToRemove) {
+    let category: keyof Categories
+    for (category in categories) {
+      categories[category] = categories[category].filter(
+        (plan) => plan.planId.toString() !== planId
+      )
+    }
+  }
 }
