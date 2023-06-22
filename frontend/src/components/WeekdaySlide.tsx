@@ -17,6 +17,7 @@ import {
   lessonIsClassLesson,
   lessonIsClassroomLesson
 } from '../shared/lessonIsXLesson'
+import { useTranslation } from 'react-i18next'
 
 type WeekdaySlideProps = {
   lessons: Plan['timetable'][Weekday]
@@ -101,6 +102,8 @@ export default React.memo(function WeekdaySlide({
   hours,
   isToday
 }: WeekdaySlideProps) {
+  const { t } = useTranslation()
+
   const { setPlanId, planId, categories } = useContext(AppContext)
   const [currentTime, setCurrentTime] = useState(getSecondsSinceMidnight())
   const hideColumnsConfiguration = useContext(HideColumnsContext)
@@ -156,12 +159,12 @@ export default React.memo(function WeekdaySlide({
                 chipLeft: lessonIsClassLesson(lesson)
                   ? lesson.chips.group ?? undefined
                   : undefined,
-                chipRight: lesson.chips.advanced ? 'R' : undefined
+                chipRight: lesson.chips.advanced ? t('A') : undefined
               },
           right: lessonIsClassroomLesson(lesson)
             ? {
                 text: lesson.name,
-                chipRight: lesson.chips.advanced ? 'R' : undefined
+                chipRight: lesson.chips.advanced ? t('A') : undefined
               }
             : {
                 text: lesson.classroom.shortName,

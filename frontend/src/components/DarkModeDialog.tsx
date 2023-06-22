@@ -13,6 +13,7 @@ import {
 } from '@mui/material'
 import { useContext, useState } from 'react'
 import { DarkModeContext } from './DarkModeContext'
+import { useTranslation } from 'react-i18next'
 
 type Props = {
   open: boolean
@@ -20,6 +21,7 @@ type Props = {
 }
 
 export default function DarkModeDialog(props: Props) {
+  const { t } = useTranslation()
   const { open, handleClose } = props
   const darkModeContext = useContext(DarkModeContext)
 
@@ -29,21 +31,21 @@ export default function DarkModeDialog(props: Props) {
 
   return (
     <Dialog open={open} onClose={handleClose}>
-      <DialogTitle>Ciemny motyw</DialogTitle>
+      <DialogTitle>{t('Dark mode')}</DialogTitle>
       <DialogContent>
         <DialogContentText sx={{ mb: 1 }}>
-          Używaj ciemnego motywu
+          {t('Use dark mode')}
         </DialogContentText>
         <FormControl fullWidth>
           <Select value={darkModeContext.option} onChange={handleChange}>
-            <MenuItem value={'always'}>Zawsze</MenuItem>
-            <MenuItem value={'never'}>Nigdy</MenuItem>
-            <MenuItem value={'auto'}>Automatycznie</MenuItem>
+            <MenuItem value={'always'}>{t('Always')}</MenuItem>
+            <MenuItem value={'never'}>{t('Never')}</MenuItem>
+            <MenuItem value={'auto'}>{t('Automatically')}</MenuItem>
           </Select>
         </FormControl>
       </DialogContent>
       <DialogActions>
-        <Button onClick={handleClose}>Zamknij</Button>
+        <Button onClick={handleClose}>{t('Close')}</Button>
       </DialogActions>
     </Dialog>
   )

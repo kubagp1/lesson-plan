@@ -16,6 +16,7 @@ import {
   HideColumnsContext,
   HideColumnsDispatchContext
 } from './HideColumnsContext'
+import { useTranslation } from 'react-i18next'
 
 type HideColumsDialogProps = {
   open: boolean
@@ -26,6 +27,8 @@ export default function HideColumnsDialog({
   open,
   handleClose
 }: HideColumsDialogProps) {
+  const { t } = useTranslation()
+
   const configuration = useContext(HideColumnsContext)
   const dispatch = useContext(HideColumnsDispatchContext)
 
@@ -34,7 +37,6 @@ export default function HideColumnsDialog({
     labels: [string, string, string]
   ) => {
     const columns = ['centerLeft', 'centerRight', 'right'] as const
-
     return (
       <FormGroup row>
         {labels.map((label, i) => (
@@ -65,29 +67,39 @@ export default function HideColumnsDialog({
   return (
     <div>
       <Dialog open={open} onClose={handleClose} fullWidth>
-        <DialogTitle variant="h5">Ukryj / pokaż kolumny</DialogTitle>
+        <DialogTitle variant="h5">{t('Hide / show columns')}</DialogTitle>
         <DialogContent>
-          <DialogContentText sx={{ marginBottom: '12px' }}>
-            Zaznacz kolumny które mają być pokazane dla każdej kategorii
-          </DialogContentText>
+          <DialogContentText sx={{ marginBottom: '12px' }}></DialogContentText>
           <section>
-            <Typography variant="h6">Uczniowie</Typography>
-            {checkBoxesFactory('class', ['Nauczyciel', 'Lekcja', 'Sala'])}
+            <Typography variant="h6">{t('Students')}</Typography>
+            {checkBoxesFactory('class', [
+              t('Teacher'),
+              t('Lesson'),
+              t('Classroom')
+            ])}
           </section>
           <section>
-            <Typography variant="h6">Nauczyciele</Typography>
-            {checkBoxesFactory('teacher', ['Klasa', 'Lekcja', 'Sala'])}
+            <Typography variant="h6">{t('Teachers')}</Typography>
+            {checkBoxesFactory('teacher', [
+              t('Class'),
+              t('Lesson'),
+              t('Classroom')
+            ])}
           </section>
           <section>
-            <Typography variant="h6">Sale</Typography>
-            {checkBoxesFactory('classroom', ['Klasa', 'Nauczyciel', 'Lekcja'])}
+            <Typography variant="h6">{t('Classrooms')}</Typography>
+            {checkBoxesFactory('classroom', [
+              t('Class'),
+              t('Teacher'),
+              t('Lesson')
+            ])}
           </section>
         </DialogContent>
         <DialogActions sx={{ justifyContent: 'space-between' }}>
           <Button color="error" onClick={restoreDefaults}>
-            przywróć domyślne
+            {t('Restore defaults')}
           </Button>
-          <Button onClick={handleClose}>zamknij</Button>
+          <Button onClick={handleClose}>{t('Close')}</Button>
         </DialogActions>
       </Dialog>
     </div>

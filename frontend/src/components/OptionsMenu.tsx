@@ -7,22 +7,31 @@ import HideColumnsDialog from './HideColumnsDialog'
 import DarkModeDialog from './DarkModeDialog'
 import PlanInfoDialog from './PlanInfoDialog'
 
-const options = [
-  {
-    name: 'Ukryj / pokaż kolumny',
-    dialog: HideColumnsDialog
-  },
-  {
-    name: 'Ciemny motyw',
-    dialog: DarkModeDialog
-  },
-  {
-    name: 'Informacje o planie',
-    dialog: PlanInfoDialog
-  }
-]
+import { useTranslation } from 'react-i18next'
+import ChangeLanguageDialog from './ChangeLanguageDialog'
 
 export default function OptionsMenu() {
+  const { t } = useTranslation()
+
+  const options = [
+    {
+      name: t('Hide / show columns'),
+      dialog: HideColumnsDialog
+    },
+    {
+      name: t('Dark mode'),
+      dialog: DarkModeDialog
+    },
+    {
+      name: t('About this plan'),
+      dialog: PlanInfoDialog
+    },
+    {
+      name: t('Change language'),
+      dialog: ChangeLanguageDialog
+    }
+  ]
+
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
 
   const tooltipOpen = useTooltip()
@@ -59,7 +68,7 @@ export default function OptionsMenu() {
     <Fragment>
       <Tooltip
         arrow
-        title="Możesz pokazać więcej kolumn tutaj"
+        title={t('You can show more columns here')}
         open={tooltipOpen}
         PopperProps={{
           modifiers: [
