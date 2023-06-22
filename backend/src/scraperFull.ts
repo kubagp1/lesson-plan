@@ -13,7 +13,7 @@ import {
   Weekday
 } from './shared/types.js'
 import { applyTransformations } from './transformations.js'
-import { getGroup, getMetadata, isAdvanced } from './utils.js'
+import { getGroup, getMetadata, isAdvanced, removeEmptyPlans } from './utils.js'
 
 export type ScrapeResult = {
   categories: Categories
@@ -56,6 +56,8 @@ export default class Scraper {
     const categories = this.planListToCategories(planList)
 
     console.log(`Scraped ${Object.keys(plans).length} plans`)
+
+    removeEmptyPlans(categories, plans)
 
     return applyTransformations({
       categories,

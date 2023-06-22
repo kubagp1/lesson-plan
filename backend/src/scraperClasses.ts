@@ -12,8 +12,10 @@ import {
   classLongNameToShortName,
   getGroup,
   getMetadata,
-  isAdvanced
+  isAdvanced,
+  removeEmptyPlans
 } from './utils.js'
+import { remove } from 'fs-extra'
 
 type ScrapePlanListResult = {
   url: string
@@ -77,6 +79,8 @@ export default class Scraper {
         plans[plan.id] = plan
       }
     }
+
+    removeEmptyPlans(categories, plans)
 
     return applyTransformations({
       categories,
