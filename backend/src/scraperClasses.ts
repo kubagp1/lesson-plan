@@ -15,7 +15,6 @@ import {
   isAdvanced,
   removeEmptyPlans
 } from './utils.js'
-import { remove } from 'fs-extra'
 
 type ScrapePlanListResult = {
   url: string
@@ -65,6 +64,14 @@ export default class Scraper {
     this.classroomPlansByShortName = this.fillEmptyEntries(
       this.classroomPlansByShortName
     )
+
+    // plans derived from class plans are unsorted
+
+    for (let plan of Object.values(this.teacherPlansByShortName))
+      sortTimetable(plan.timetable, plan.hours)
+
+    for (let plan of Object.values(this.classroomPlansByShortName))
+      sortTimetable(plan.timetable, plan.hours)
 
     // i need to use ids instead of names as keys
     // for future me: you can't use the spread operator because it will overwrite the keys with the same name
@@ -210,40 +217,27 @@ export default class Scraper {
                   }
                 }
 
-                // at this point we know that the teacher and room plans exist in memory and have their ids set
+                // TEACHER DERIVE
 
                 if (teacherShortName in this.teacherPlansByShortName) {
-                  // first we need to make sure that the teacher plan has enough rows but we can't override any entries
-
                   let teacherPlan =
                     this.teacherPlansByShortName[teacherShortName]
 
                   let teacherPlanTimetable = teacherPlan.timetable
 
-                  if (teacherPlanTimetable.monday.length < rowIndex + 1) {
-                    // we need to add rows
-                    let rowsToAdd =
-                      rowIndex + 1 - teacherPlanTimetable.monday.length
-                    for (let i = 0; i < rowsToAdd; i++) {
-                      for (let day of weekdays) {
-                        teacherPlanTimetable[day].push([])
-                      }
-                    }
-                  }
+                  let hourIndex = teacherPlan.hours.indexOf(hours[rowIndex])
 
-                  if (teacherPlan.hours.length < rowIndex + 1) {
-                    // we need to add hours
-                    let hoursToAdd = rowIndex + 1 - teacherPlan.hours.length
-                    for (let i = 0; i < hoursToAdd; i++) {
-                      teacherPlan.hours.push(
-                        hours[rowIndex - hoursToAdd + 1 + i]
-                      )
+                  if (hourIndex === -1) {
+                    hourIndex = teacherPlan.hours.length
+                    teacherPlan.hours.push(hours[rowIndex])
+                    for (let day of weekdays) {
+                      teacherPlanTimetable[day].push([])
                     }
                   }
 
                   let teacherPlanRows = teacherPlanTimetable[weekday]
 
-                  teacherPlanRows[rowIndex].push({
+                  teacherPlanRows[hourIndex].push({
                     name: subjectName,
                     class: {
                       planId: planId,
@@ -260,37 +254,31 @@ export default class Scraper {
                       advanced: isAdvanced(subjectName)
                     }
                   })
+                } else {
+                  throw new Error("Teacher plan doesn't exist (this is a bug)")
                 }
 
+                // CLASSROOM DERIVE
+
                 if (roomShortName in this.classroomPlansByShortName) {
-                  // first we need to make sure that the room plan has enough rows but we can't override any entries
+                  let classroomPlan =
+                    this.classroomPlansByShortName[roomShortName]
 
-                  let roomPlan = this.classroomPlansByShortName[roomShortName]
+                  let classroomPlanTimetable = classroomPlan.timetable
 
-                  let roomPlanTimetable = roomPlan.timetable
+                  let hourIndex = classroomPlan.hours.indexOf(hours[rowIndex])
 
-                  if (roomPlanTimetable.monday.length < rowIndex + 1) {
-                    // we need to add rows
-                    let rowsToAdd =
-                      rowIndex + 1 - roomPlanTimetable.monday.length
-                    for (let i = 0; i < rowsToAdd; i++) {
-                      for (let day of weekdays) {
-                        roomPlanTimetable[day].push([])
-                      }
+                  if (hourIndex === -1) {
+                    hourIndex = classroomPlan.hours.length
+                    classroomPlan.hours.push(hours[rowIndex])
+                    for (let day of weekdays) {
+                      classroomPlanTimetable[day].push([])
                     }
                   }
 
-                  if (roomPlan.hours.length < rowIndex + 1) {
-                    // we need to add hours
-                    let hoursToAdd = rowIndex + 1 - roomPlan.hours.length
-                    for (let i = 0; i < hoursToAdd; i++) {
-                      roomPlan.hours.push(hours[rowIndex - hoursToAdd + 1 + i])
-                    }
-                  }
+                  let classroomPlanRows = classroomPlanTimetable[weekday]
 
-                  let roomPlanRows = roomPlanTimetable[weekday]
-
-                  roomPlanRows[rowIndex].push({
+                  classroomPlanRows[hourIndex].push({
                     name: subjectName,
                     class: {
                       planId: planId,
@@ -307,6 +295,10 @@ export default class Scraper {
                       advanced: isAdvanced(subjectName)
                     }
                   })
+                } else {
+                  throw new Error(
+                    "Classroom plan doesn't exist (this is a bug)"
+                  )
                 }
 
                 // at this point we derived the teacher and room plans from the current entry and added the entry to them
@@ -364,4 +356,30 @@ export default class Scraper {
 
     return planList
   }
+}
+function sortTimetable<T extends Plan['timetable']>(
+  timetable: T,
+  hours: string[]
+): void {
+  for (let day of weekdays) {
+    timetable[day].sort((a, b) => {
+      const aIndex = timetable[day].findIndex((entry) => entry === a)
+      const bIndex = timetable[day].findIndex((entry) => entry === b)
+
+      if (aIndex === -1 || bIndex === -1) {
+        throw new Error('Index not found in timetable (this is a bug)')
+      }
+
+      return hourToMinutes(hours[aIndex]) - hourToMinutes(hours[bIndex])
+    })
+  }
+
+  hours.sort((a, b) => {
+    return hourToMinutes(a) - hourToMinutes(b)
+  })
+}
+
+function hourToMinutes(hour: string): number {
+  const [h, m] = hour.split(':').map((s) => parseInt(s))
+  return h * 60 + m
 }
