@@ -1,11 +1,16 @@
 import MoreIcon from '@mui/icons-material/MoreVert'
-import { IconButton, Tooltip } from '@mui/material'
+import { IconButton, ListItemIcon, ListItemText, Tooltip } from '@mui/material'
 import Menu from '@mui/material/Menu'
 import MenuItem from '@mui/material/MenuItem'
 import { useState, MouseEvent, Fragment, useEffect } from 'react'
 import HideColumnsDialog from './HideColumnsDialog'
 import DarkModeDialog from './DarkModeDialog'
 import PlanInfoDialog from './PlanInfoDialog'
+
+import VisibilityOffIcon from '@mui/icons-material/VisibilityOff'
+import DarkModeIcon from '@mui/icons-material/DarkMode'
+import InfoIcon from '@mui/icons-material/Info'
+import LanguageIcon from '@mui/icons-material/Language'
 
 import { useTranslation } from 'react-i18next'
 import ChangeLanguageDialog from './ChangeLanguageDialog'
@@ -16,19 +21,23 @@ export default function OptionsMenu() {
   const options = [
     {
       name: t('Hide / show columns'),
-      dialog: HideColumnsDialog
+      dialog: HideColumnsDialog,
+      icon: <VisibilityOffIcon />
     },
     {
       name: t('Dark mode'),
-      dialog: DarkModeDialog
+      dialog: DarkModeDialog,
+      icon: <DarkModeIcon />
     },
     {
       name: t('About this plan'),
-      dialog: PlanInfoDialog
+      dialog: PlanInfoDialog,
+      icon: <InfoIcon />
     },
     {
       name: t('Change language'),
-      dialog: ChangeLanguageDialog
+      dialog: ChangeLanguageDialog,
+      icon: <LanguageIcon />
     }
   ]
 
@@ -102,7 +111,8 @@ export default function OptionsMenu() {
       >
         {options.map((option, index) => (
           <MenuItem key={index} onClick={() => handleOptionClick(index)}>
-            {option.name}
+            <ListItemIcon>{option.icon}</ListItemIcon>
+            <ListItemText>{option.name}</ListItemText>
           </MenuItem>
         ))}
       </Menu>
