@@ -2,13 +2,16 @@ import { useContext, useEffect, useMemo, useState } from 'react'
 
 import { Plan, Weekday, weekdays } from '../shared/types'
 import WeekdaySlide from './WeekdaySlide'
-import apiCalls from '../apiCalls'
+import SignalCellularConnectedNoInternet0BarIcon from '@mui/icons-material/SignalCellularConnectedNoInternet0Bar'
 import EmblaCarousel from './EmblaCarousel'
-import { Box, CircularProgress } from '@mui/material'
+import { Box, Button, CircularProgress, Typography } from '@mui/material'
 import { AppContext } from './AppContext'
 import { WeekdayContext } from './WeekdayContext'
+import { useTranslation } from 'react-i18next'
 
 export default function WeekdaySlider() {
+  const { t } = useTranslation()
+
   const { plan: planQuery } = useContext(AppContext)
   const { weekday, setWeekday } = useContext(WeekdayContext)
 
@@ -45,7 +48,35 @@ export default function WeekdaySlider() {
       </Box>
     )
 
-  if (isError) return <div>Error</div> // TODO: Better error
+  if (isError)
+    return (
+      <Box
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          paddingTop: '10vh',
+          paddingInline: '16px',
+          gap: '16px'
+        }}
+      >
+        <SignalCellularConnectedNoInternet0BarIcon
+          sx={{
+            fontSize: '40vw',
+            opacity: '0.5'
+          }}
+        />
+        <Typography textAlign="center">
+          {t('Failed to load. Please check your internet connection.')}
+        </Typography>
+
+        <a href={import.meta.env.VITE_FALLBACK_URL || 'http://example.com'}>
+          <Button variant="contained" fullWidth size="large">
+            {t('Go to original plan site')}
+          </Button>
+        </a>
+      </Box>
+    )
 
   return (
     <EmblaCarousel

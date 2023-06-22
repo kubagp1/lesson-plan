@@ -2,7 +2,7 @@
   "Always": "Zawsze",
   "Never": "Nigdy",
   "Automatically": "Automatycznie",
-  "Dark mode": "Cimeny motyw",
+  "Dark mode": "Ciemny motyw",
   "Use dark mode": "Użyj ciemnego motywu",
   "Close": "Zamknij",
   "Hide / show columns": "Ukryj / pokaż kolumny",
@@ -33,5 +33,8 @@
   "Change language": "Zmień język",
   "Select display language": "Wybierz język wyświetlania",
   "English": "Angielski",
-  "Polish": "Polski"
+  "Polish": "Polski",
+  "Failed to load": "Nie udało się załadować",
+  "Failed to load. Please check your internet connection.": "Nie udało się załadować. Sprawdź swoje połączenie z internetem.",
+  "Go to original plan site": "Przejdź do oryginalnej strony z planem"
 }
