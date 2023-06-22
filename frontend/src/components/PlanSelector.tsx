@@ -31,8 +31,8 @@ export default function PlanSelector() {
 
   const { categories, planId, setPlanId } = useContext(AppContext)
 
-  if (categories.isLoading === undefined) return t('Loading...')
-  if (categories.isError) return t('Failed to load')
+  if (categories.isLoading === undefined) return <>{t('Loading...')}</>
+  if (categories.isError) return <>{t('Failed to load')}</>
   if (categories.data === undefined) return null
   if (planId === null) return null
 
