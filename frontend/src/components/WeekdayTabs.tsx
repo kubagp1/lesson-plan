@@ -2,6 +2,8 @@ import { Tab, Tabs } from '@mui/material'
 import { Weekday, weekdays } from '../shared/types'
 import { useContext } from 'react'
 import { WeekdayContext } from './WeekdayContext'
+import i18n from '../i18n'
+import { useTranslation } from 'react-i18next'
 
 export function getCurrentWeekday(): Weekday {
   const date = new Date()
@@ -11,9 +13,13 @@ export function getCurrentWeekday(): Weekday {
   return weekdays[weekdayNumber - 1]
 }
 
-const labels = ['pon.', 'wt.', 'śr.', 'czw.', 'pt.']
-
 export default function WeekdayTabs() {
+  const { i18n } = useTranslation()
+
+  const labels = i18n.language.toLowerCase().startsWith('pl')
+    ? ['pon.', 'wt.', 'śr.', 'czw.', 'pt.']
+    : ['mon.', 'tue.', 'wed.', 'thu.', 'fri.']
+
   const { weekday: selectedWeekday, setWeekday: setSelectedWeekday } =
     useContext(WeekdayContext)
 

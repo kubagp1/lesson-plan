@@ -8,10 +8,13 @@ import {
   DialogActions,
   Button
 } from '@mui/material'
+import { useTranslation } from 'react-i18next'
 
 const MAX_STALE_PLAN_AGE = 1000 * 60 * 60 * 24 // 24 hours
 
 export default function StalePlanWarningDialog() {
+  const { t } = useTranslation()
+
   const { plan } = useContext(AppContext)
   const [open, setOpen] = useState(false)
 
@@ -61,20 +64,20 @@ export default function StalePlanWarningDialog() {
 
   return (
     <Dialog open={open} onClose={handleClose}>
-      <DialogTitle variant="h5">Nieaktualny plan</DialogTitle>
+      <DialogTitle variant="h5">{t('Outdated plan')}</DialogTitle>
       <DialogContent>
         <DialogContentText sx={{ mb: 1 }}>
-          Minęło {hoursSinceScraped} godzin(y) od kiedy ten plan został
-          zdrapany. Może to oznaczać, że wystąpił błąd podczas zbierania danych
-          z oficjalnej strony.
+          {t(
+            'It has been {{hoursSinceScraped}} hour(s) since this plan was scraped. This may indicate an error occurred while gathering data from the official website.',
+            { hoursSinceScraped }
+          )}
         </DialogContentText>
         <DialogContentText>
-          Jeśli ten problem będzie się powtarzał, skontaktuj się z
-          administratorem.
+          {t('If this problem persists, please contact the administrator.')}
         </DialogContentText>
         <a href={plan.data.metadata.scrapedFrom}>
           <Button size="large" fullWidth variant="contained" sx={{ my: 2 }}>
-            Pzejdź do oficjalnej strony z planem
+            {t('Go to official plan website')}
           </Button>
         </a>
       </DialogContent>
@@ -85,7 +88,7 @@ export default function StalePlanWarningDialog() {
             setOpen(false)
           }}
         >
-          Ignoruj
+          {t('Ignore')}
         </Button>
       </DialogActions>
     </Dialog>

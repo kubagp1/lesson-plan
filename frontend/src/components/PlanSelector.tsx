@@ -23,8 +23,11 @@ import {
   getSavedSessionPlanIdOrDefaultForCategory,
   updateSavedSessionHelper
 } from '../lib/savedSession'
+import { useTranslation } from 'react-i18next'
 
 export default function PlanSelector() {
+  const { t } = useTranslation()
+
   const { categories, planId, setPlanId } = useContext(AppContext)
 
   if (categories.data === undefined) return null // TODO loading indicator
@@ -93,9 +96,9 @@ export default function PlanSelector() {
       value={selectedCategoryName!}
       onChange={handleCategoryNameChange}
     >
-      <MenuItem value="class">Uczniowie</MenuItem>
-      <MenuItem value="teacher">Nauczyciele</MenuItem>
-      <MenuItem value="classroom">Sale</MenuItem>
+      <MenuItem value="class"> {t('Students')} </MenuItem>
+      <MenuItem value="teacher"> {t('Teachers')} </MenuItem>
+      <MenuItem value="classroom"> {t('Classrooms')} </MenuItem>
     </Select>
   )
 
