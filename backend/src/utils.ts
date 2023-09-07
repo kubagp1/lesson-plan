@@ -1,6 +1,6 @@
 import { Categories, Plan } from './shared/types'
 
-const DATE_REGEX = /(\d{2}\.\d{2}\.\d{4})/
+const DATE_REGEX = /(\d{1,2}\.\d{1,2}\.\d{4})/
 
 export function getMetadata(
   document: Document,
