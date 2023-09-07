@@ -1,4 +1,4 @@
-FROM node:20
+FROM node:18-alpine3.17
 WORKDIR /app
 COPY frontend/package*.json ./
 RUN npm ci
