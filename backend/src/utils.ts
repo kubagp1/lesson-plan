@@ -7,34 +7,37 @@ export function getMetadata(
   url: string,
   scraper: 'full' | 'classes'
 ) {
-  // body > div > table > tbody > tr:nth-child(2) > td contains a string like "Obowiązuje od: 10.05.2023"
-  const applicableAtEl = document.querySelector(
-    'body > div > table > tbody > tr:nth-child(2) > td'
-  )
+  const applicableAtSource = [
+    ...document.querySelectorAll('body>div>table>tbody>tr:not(:nth-child(1))')
+  ]
+    .map((tr) => [...tr.querySelectorAll('*')])
+    .reduce((a, b) => [...a, ...b], [])
+    .find((el) =>
+      el.textContent?.toLowerCase().includes('obowiązuje od')
+    )?.textContent
 
   const applicableAt =
-    applicableAtEl?.textContent === null ||
-    applicableAtEl?.textContent === undefined ||
-    applicableAtEl.textContent.match(DATE_REGEX) === null
-      ? null
-      : new Date(
-          applicableAtEl.textContent.match(DATE_REGEX)![0].replace(/\./g, '-')
+    applicableAtSource && applicableAtSource.match(DATE_REGEX) != null
+      ? new Date(
+          applicableAtSource.match(DATE_REGEX)![0].replace(/\./g, '-')
         ).toJSON()
+      : null
 
-  // body > div > table > tbody > tr:nth-child(3) > td.op > table > tbody > tr > td:nth-child(1)
-  // first node of this is a text node containing a string like "'\nwygenerowano 08.05.2023'"
-  const generatedAtNode = document.querySelector(
-    'body > div > table > tbody > tr:nth-child(3) > td.op > table > tbody > tr > td:nth-child(1)'
-  )?.firstChild
+  const generatedAtSource = [
+    ...document.querySelectorAll('body>div>table>tbody>tr:not(:nth-child(1))')
+  ]
+    .map((tr) => [...tr.querySelectorAll('*')])
+    .reduce((a, b) => [...a, ...b], [])
+    .find((el) =>
+      el.textContent?.toLowerCase().includes('wygenerowano')
+    )?.textContent
 
   const generatedAt =
-    generatedAtNode?.textContent === null ||
-    generatedAtNode?.textContent === undefined ||
-    generatedAtNode.textContent.match(DATE_REGEX) === null
-      ? null
-      : new Date(
-          generatedAtNode.textContent.match(DATE_REGEX)![0].replace(/\./g, '-')
+    generatedAtSource && generatedAtSource.match(DATE_REGEX) != null
+      ? new Date(
+          generatedAtSource.match(DATE_REGEX)![0].replace(/\./g, '-')
         ).toJSON()
+      : null
 
   const metadata = {
     applicableAt,
