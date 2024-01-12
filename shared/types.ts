@@ -44,8 +44,8 @@ export type Chips = {
 
 export type Metadata = {
   scrapedAt: string
-  generatedAt: string
-  applicableAt: string
+  generatedAt: string | null
+  applicableAt: string | null
   scrapedFrom: string
   scrapedUsing: 'full' | 'classes'
 }
