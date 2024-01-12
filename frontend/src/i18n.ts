@@ -20,7 +20,7 @@ let initOptions: InitOptions = {
   fallbackLng: 'en',
   resources,
   interpolation: {
-    escapeValue: false // react already safes from xss
+    escapeValue: false // react already saves from xss
   },
   saveMissing: true
 }
