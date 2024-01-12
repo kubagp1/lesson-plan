@@ -43,12 +43,16 @@ export default function PlanInfoDialog(props: Props) {
       <DialogContent>
         <Typography variant="h6">{t('Effective from')}</Typography>
         <Typography>
-          {formatDateTime(plan.data.metadata.applicableAt)}
+          {plan.data.metadata.applicableAt != null
+            ? formatDateTime(plan.data.metadata.applicableAt)
+            : t('Unknown')}
         </Typography>
 
         <Typography variant="h6">{t('Generated at')}</Typography>
         <Typography>
-          {formatDateTime(plan.data.metadata.generatedAt)}
+          {plan.data.metadata.generatedAt != null
+            ? formatDateTime(plan.data.metadata.generatedAt)
+            : t('Unknown')}
         </Typography>
 
         <Typography variant="h6">{t('Scraped at')}</Typography>

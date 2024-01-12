@@ -12,12 +12,12 @@ export function getMetadata(
     'body > div > table > tbody > tr:nth-child(2) > td'
   )
 
-  if (applicableAtEl == null || applicableAtEl.textContent == null)
-    throw new Error('No applicableAtEl in planHTML')
-
-  const applicableAt = new Date(
-    applicableAtEl.textContent.match(DATE_REGEX)![0].replace(/\./g, '-')
-  ).toJSON()
+  const applicableAt =
+    applicableAtEl?.textContent == null
+      ? null
+      : new Date(
+          applicableAtEl.textContent.match(DATE_REGEX)![0].replace(/\./g, '-')
+        ).toJSON()
 
   // body > div > table > tbody > tr:nth-child(3) > td.op > table > tbody > tr > td:nth-child(1)
   // first node of this is a text node containing a string like "'\nwygenerowano 08.05.2023'"
@@ -25,16 +25,12 @@ export function getMetadata(
     'body > div > table > tbody > tr:nth-child(3) > td.op > table > tbody > tr > td:nth-child(1)'
   )?.firstChild
 
-  if (
-    generatedAtNode == undefined ||
-    generatedAtNode == null ||
-    generatedAtNode.textContent == null
-  )
-    throw new Error('No generatedAtNode in planHTML')
-
-  const generatedAt = new Date(
-    generatedAtNode.textContent.match(DATE_REGEX)![0].replace(/\./g, '-')
-  ).toJSON()
+  const generatedAt =
+    generatedAtNode?.textContent == null
+      ? null
+      : new Date(
+          generatedAtNode.textContent.match(DATE_REGEX)![0].replace(/\./g, '-')
+        ).toJSON()
 
   const metadata = {
     applicableAt,
