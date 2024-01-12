@@ -13,7 +13,9 @@ export function getMetadata(
   )
 
   const applicableAt =
-    applicableAtEl?.textContent == null
+    applicableAtEl?.textContent === null ||
+    applicableAtEl?.textContent === undefined ||
+    applicableAtEl.textContent.match(DATE_REGEX) === null
       ? null
       : new Date(
           applicableAtEl.textContent.match(DATE_REGEX)![0].replace(/\./g, '-')
@@ -26,7 +28,9 @@ export function getMetadata(
   )?.firstChild
 
   const generatedAt =
-    generatedAtNode?.textContent == null
+    generatedAtNode?.textContent === null ||
+    generatedAtNode?.textContent === undefined ||
+    generatedAtNode.textContent.match(DATE_REGEX) === null
       ? null
       : new Date(
           generatedAtNode.textContent.match(DATE_REGEX)![0].replace(/\./g, '-')
